@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+// 1 saatlik aralıklar — 08:00'den 20:00'ye
 const HOURS = [
-  '08:00','08:30','09:00','09:30','10:00','10:30',
-  '11:00','11:30','12:00','12:30','13:00','13:30',
-  '14:00','14:30','15:00','15:30','16:00','16:30',
-  '17:00','17:30','18:00','18:30','19:00','19:30',
+  '08:00','09:00','10:00','11:00','12:00','13:00',
+  '14:00','15:00','16:00','17:00','18:00','19:00','20:00',
 ];
 
 function getWeekDays(startDate) {
@@ -31,10 +30,52 @@ function toDateStr(d) {
   return d.toISOString().split('T')[0];
 }
 
+// Saat string'ini normalize et: "09:00:00" → "09:00"
+function normalizeTime(t) {
+  return (t || '').slice(0, 5);
+}
+
 const DAY_NAMES = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 
-export default function WeekCalendar({ sessions, onSlotClick }) {
+// Slot durumu:
+// 'past'     → geçmiş saat (gri, pasif)
+// 'booked'   → onaylanmış seans veya onaylanmış talep (kırmızı, tıklanamaz)
+// 'pending'  → bekleyen talep (turuncu, tıklanamaz)
+// 'free'     → müsait (yeşil, tıklanabilir)
+
+function getSlotStatus(date, hour, bookedSet, pendingSet, pastFn) {
+  if (pastFn(date, hour)) return 'past';
+  const key = `${date}|${hour}`;
+  if (bookedSet.has(key)) return 'booked';
+  if (pendingSet.has(key)) return 'pending';
+  return 'free';
+}
+
+const STATUS_STYLES = {
+  past: {
+    cell: 'bg-gray-50 text-gray-300 cursor-default border border-gray-100',
+    label: '',
+    icon: '',
+  },
+  booked: {
+    cell: 'bg-red-100 text-red-400 cursor-not-allowed border border-red-200',
+    label: 'Dolu',
+    icon: '✕',
+  },
+  pending: {
+    cell: 'bg-orange-100 text-orange-500 cursor-not-allowed border border-orange-200',
+    label: 'Talep Var',
+    icon: '⏳',
+  },
+  free: {
+    cell: 'bg-emerald-50 text-emerald-600 cursor-pointer border border-emerald-200 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-200 active:scale-95',
+    label: 'Müsait',
+    icon: '+',
+  },
+};
+
+export default function WeekCalendar({ sessions, sessionRequests, onSlotClick }) {
   const [weekStart, setWeekStart] = useState(() => getMondayOfWeek(new Date()));
 
   const days = getWeekDays(weekStart);
@@ -54,12 +95,21 @@ export default function WeekCalendar({ sessions, onSlotClick }) {
 
   const goToday = () => setWeekStart(getMondayOfWeek(new Date()));
 
-  // Build a set of booked slots: "date|HH:MM"
-  const bookedSet = new Set(
-    sessions.map(s => `${s.session_date}|${(s.session_time || '').slice(0, 5)}`)
-  );
+  // Onaylı/aktif seanslar → kırmızı
+  // Onaylı session_requests → kırmızı
+  const bookedSet = new Set([
+    ...sessions.map(s => `${s.session_date}|${normalizeTime(s.session_time)}`),
+    ...(sessionRequests || [])
+      .filter(r => r.status === 'onaylandi')
+      .map(r => `${r.requested_date}|${normalizeTime(r.requested_time)}`),
+  ]);
 
-  const isBooked = (date, time) => bookedSet.has(`${date}|${time}`);
+  // Bekleyen (henüz onaylanmamış) session_requests → turuncu
+  const pendingSet = new Set(
+    (sessionRequests || [])
+      .filter(r => r.status === 'bekliyor')
+      .map(r => `${r.requested_date}|${normalizeTime(r.requested_time)}`)
+  );
 
   const isPast = (date, time) => {
     const now = new Date();
@@ -106,17 +156,21 @@ export default function WeekCalendar({ sessions, onSlotClick }) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 px-5 py-3 bg-gray-50/30 border-b border-gray-100 text-[11px] text-gray-500">
+      <div className="flex flex-wrap items-center gap-4 px-5 py-3 bg-gray-50/30 border-b border-gray-100 text-[11px] text-gray-500">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-emerald-100 border border-emerald-300" />
-          <span>Müsait</span>
+          <div className="w-4 h-4 rounded bg-emerald-100 border border-emerald-300 flex items-center justify-center text-[9px] text-emerald-600 font-bold">+</div>
+          <span className="font-medium text-emerald-700">Müsait — Tıkla, randevu al</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-gray-200 border border-gray-300" />
-          <span>Dolu</span>
+          <div className="w-4 h-4 rounded bg-orange-100 border border-orange-200 flex items-center justify-center text-[9px] text-orange-500">⏳</div>
+          <span>Talep var (onay bekliyor)</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200 opacity-60" />
+          <div className="w-4 h-4 rounded bg-red-100 border border-red-200 flex items-center justify-center text-[9px] text-red-400 font-bold">✕</div>
+          <span>Dolu (onaylanmış)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-4 rounded bg-gray-100 border border-gray-200" />
           <span>Geçmiş</span>
         </div>
       </div>
@@ -144,50 +198,49 @@ export default function WeekCalendar({ sessions, onSlotClick }) {
           </div>
 
           {/* Slots */}
-          <div className="max-h-[520px] overflow-y-auto">
+          <div>
             {HOURS.map(hour => (
               <div
                 key={hour}
-                className="grid border-b border-gray-50 hover:bg-gray-50/40 transition-colors"
+                className="grid border-b border-gray-50"
                 style={{ gridTemplateColumns: '64px repeat(7, 1fr)' }}
               >
                 {/* Time label */}
-                <div className="flex items-center justify-center py-2">
-                  <span className="text-[11px] font-medium text-gray-400">{hour}</span>
+                <div className="flex items-center justify-center py-1.5 bg-gray-50/40 border-r border-gray-100">
+                  <span className="text-[12px] font-semibold text-gray-500">{hour}</span>
                 </div>
 
                 {/* Cells */}
                 {days.map((day, i) => {
                   const dateStr = toDateStr(day);
-                  const booked = isBooked(dateStr, hour);
-                  const past = isPast(dateStr, hour);
+                  const status = getSlotStatus(dateStr, hour, bookedSet, pendingSet, isPast);
+                  const style = STATUS_STYLES[status];
                   const isToday = dateStr === today;
 
-                  let cellClass = 'border-l border-gray-100 mx-0.5 my-0.5 rounded-lg flex items-center justify-center text-[11px] font-medium transition-all ';
-
-                  if (past) {
-                    cellClass += 'bg-gray-50 text-gray-300 cursor-default';
-                  } else if (booked) {
-                    cellClass += 'bg-gray-200/70 text-gray-400 cursor-not-allowed';
-                  } else {
-                    cellClass += 'bg-emerald-50 text-emerald-600 cursor-pointer hover:bg-emerald-500 hover:text-white hover:shadow-md hover:shadow-emerald-200 active:scale-95';
-                    if (isToday) cellClass += ' ring-1 ring-teal-200';
-                  }
+                  const titleMap = {
+                    past: 'Geçmiş saat',
+                    booked: 'Bu saat dolu — başka bir saat seçin',
+                    pending: 'Bu saatte onay bekleyen talep var',
+                    free: `${dateStr} — ${hour} için randevu talep et`,
+                  };
 
                   return (
                     <div
                       key={i}
-                      className={cellClass}
-                      style={{ minHeight: '40px' }}
+                      className={`mx-1 my-1 rounded-xl flex flex-col items-center justify-center transition-all duration-150 select-none ${style.cell} ${isToday && status === 'free' ? 'ring-2 ring-teal-300' : ''}`}
+                      style={{ minHeight: '52px' }}
                       onClick={() => {
-                        if (!booked && !past) {
+                        if (status === 'free') {
                           onSlotClick({ date: dateStr, time: hour });
                         }
                       }}
-                      title={booked ? 'Bu saat dolu' : past ? 'Geçmiş saat' : `${dateStr} ${hour} için randevu al`}
+                      title={titleMap[status]}
                     >
-                      {booked && (
-                        <span className="text-[10px] text-gray-400">●</span>
+                      {status !== 'past' && (
+                        <>
+                          <span className="text-[14px] leading-none">{style.icon}</span>
+                          <span className="text-[9px] mt-0.5 font-medium opacity-80">{style.label}</span>
+                        </>
                       )}
                     </div>
                   );

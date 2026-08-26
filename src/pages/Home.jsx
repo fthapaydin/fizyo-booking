@@ -3,26 +3,44 @@ import axios from 'axios';
 import { API_URL } from '../lib/api';
 import WeekCalendar from '../components/WeekCalendar';
 import BookingModal from '../components/BookingModal';
-import { Activity, Phone, MapPin, Clock, CheckCircle, Star } from 'lucide-react';
+import { Activity, Clock, CheckCircle, Star, RefreshCw } from 'lucide-react';
 
 export default function Home({ onSuccess }) {
   const [sessions, setSessions] = useState([]);
+  const [sessionRequests, setSessionRequests] = useState([]);
   const [treatments, setTreatments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  useEffect(() => {
-    Promise.all([
-      axios.get(`${API_URL}/sessions`).catch(() => ({ data: [] })),
-      axios.get(`${API_URL}/treatments`).catch(() => ({ data: [] })),
-    ]).then(([s, t]) => {
+  const fetchData = async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    try {
+      const [s, r, t] = await Promise.all([
+        axios.get(`${API_URL}/sessions`).catch(() => ({ data: [] })),
+        axios.get(`${API_URL}/session-requests`).catch(() => ({ data: [] })),
+        axios.get(`${API_URL}/treatments`).catch(() => ({ data: [] })),
+      ]);
       setSessions(s.data);
+      setSessionRequests(r.data);
       setTreatments(t.data);
-    }).finally(() => setLoading(false));
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // Her 60 saniyede bir otomatik yenile
+    const interval = setInterval(() => fetchData(), 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSuccess = (bookingInfo) => {
     setSelectedSlot(null);
+    // Takvimi anında güncelle (yeni talep turuncu görünsün)
+    fetchData();
     onSuccess(bookingInfo);
   };
 
@@ -42,9 +60,7 @@ export default function Home({ onSuccess }) {
             <div className="w-8 h-8 bg-gradient-to-br from-teal-600 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
               <Activity size={15} className="text-white" strokeWidth={2.5} />
             </div>
-            <div>
-              <span className="text-[15px] font-bold text-gray-900">Fizyoterapi Kliniği</span>
-            </div>
+            <span className="text-[15px] font-bold text-gray-900">Fizyoterapi Kliniği</span>
           </div>
           <button
             onClick={() => document.getElementById('calendar-section').scrollIntoView({ behavior: 'smooth' })}
@@ -69,11 +85,10 @@ export default function Home({ onSuccess }) {
           </span>
         </h1>
         <p className="text-[16px] text-gray-500 max-w-xl mx-auto mb-8 leading-relaxed">
-          Müsait saatleri takvimden seçin, ad-soyad ve telefon numaranızla dakikalar içinde randevu talebinde bulunun.
+          Müsait saatleri takvimden seçin, adınız ve telefon numaranızla dakikalar içinde randevu talebinde bulunun.
         </p>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((f, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-100 px-5 py-4 shadow-sm text-left">
               <div className="w-9 h-9 bg-teal-50 rounded-xl flex items-center justify-center mb-3">
@@ -87,7 +102,7 @@ export default function Home({ onSuccess }) {
 
         <button
           onClick={() => document.getElementById('calendar-section').scrollIntoView({ behavior: 'smooth' })}
-          className="h-12 px-8 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-2xl text-[15px] font-bold hover:from-teal-700 hover:to-emerald-600 transition-all shadow-xl shadow-teal-200 hover:shadow-teal-300"
+          className="h-12 px-8 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-2xl text-[15px] font-bold hover:from-teal-700 hover:to-emerald-600 transition-all shadow-xl shadow-teal-200"
         >
           Müsait Saatleri Gör →
         </button>
@@ -95,22 +110,36 @@ export default function Home({ onSuccess }) {
 
       {/* Calendar Section */}
       <section id="calendar-section" className="max-w-6xl mx-auto px-4 pb-20">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Randevu Takvimi</h2>
-          <p className="text-[14px] text-gray-500">
-            🟢 <strong>Yeşil</strong> saat dilimlerine tıklayarak randevu talebinde bulunabilirsiniz.
-          </p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">Randevu Takvimi</h2>
+            <p className="text-[13px] text-gray-500">
+              <span className="text-emerald-600 font-semibold">Yeşil</span> alanlara tıklayarak randevu talep edin.
+            </p>
+          </div>
+          <button
+            onClick={() => fetchData(true)}
+            disabled={refreshing}
+            className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50"
+          >
+            <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+            Yenile
+          </button>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex items-center justify-center h-64 bg-white rounded-3xl border border-gray-100">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-10 h-10 border-3 border-teal-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-[3px] border-teal-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-[13px] text-gray-400">Takvim yükleniyor...</p>
             </div>
           </div>
         ) : (
-          <WeekCalendar sessions={sessions} onSlotClick={setSelectedSlot} />
+          <WeekCalendar
+            sessions={sessions}
+            sessionRequests={sessionRequests}
+            onSlotClick={setSelectedSlot}
+          />
         )}
       </section>
 
@@ -124,13 +153,11 @@ export default function Home({ onSuccess }) {
               </div>
               <span className="text-[14px] font-bold text-gray-700">Fizyoterapi Kliniği</span>
             </div>
-            <div className="flex items-center gap-5 text-[12px] text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <Clock size={13} />
-                <span>Hft İçi 08:00 – 20:00</span>
-              </div>
+            <div className="flex items-center gap-2 text-[12px] text-gray-400">
+              <Clock size={13} />
+              <span>Hafta İçi & Hafta Sonu 08:00 – 20:00</span>
             </div>
-            <p className="text-[11px] text-gray-400">© 2026 Fizyoterapi Kliniği — Tüm hakları saklıdır.</p>
+            <p className="text-[11px] text-gray-400">© 2026 Fizyoterapi Kliniği</p>
           </div>
         </div>
       </footer>
