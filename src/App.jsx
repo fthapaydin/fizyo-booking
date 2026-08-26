@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import Home from './pages/Home';
+import Calendar from './pages/Calendar';
 import Success from './pages/Success';
 import './index.css';
 
 export default function App() {
-  const [page, setPage] = useState('home'); // 'home' | 'success'
+  const [page, setPage] = useState('home'); // 'home' | 'calendar' | 'success'
   const [bookingInfo, setBookingInfo] = useState(null);
 
   const handleSuccess = (info) => {
@@ -22,5 +23,14 @@ export default function App() {
     return <Success bookingInfo={bookingInfo} onBack={handleBack} />;
   }
 
-  return <Home onSuccess={handleSuccess} />;
+  if (page === 'calendar') {
+    return (
+      <Calendar
+        onSuccess={handleSuccess}
+        onBack={() => setPage('home')}
+      />
+    );
+  }
+
+  return <Home onCalendar={() => setPage('calendar')} />;
 }
