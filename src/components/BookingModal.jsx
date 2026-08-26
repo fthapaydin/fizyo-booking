@@ -31,23 +31,50 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
 
     setSubmitting(true);
     try {
-      await axios.post(`${API_URL}/booking/public`, {
-        full_name: form.full_name.trim(),
-        phone: cleaned,
+      // 1. Hastayı telefona göre ara
+      let patientId = null;
+      try {
+        const patRes = await axios.get(`${API_URL}/patients/by-phone/${cleaned}`);
+        patientId = patRes.data?.id;
+      } catch {
+        // Bulunamadı — yeni hasta oluştur
+      }
+
+      // 2. Hasta yoksa oluştur
+      if (!patientId) {
+        const newPatRes = await axios.post(`${API_URL}/patients`, {
+          full_name: form.full_name.trim(),
+          phone: cleaned,
+          total_sessions: 10,
+        });
+        patientId = newPatRes.data?.id;
+      }
+
+      if (!patientId) throw new Error('Hasta kaydı oluşturulamadı.');
+
+      // 3. Randevu talebi oluştur
+      await axios.post(`${API_URL}/session-requests`, {
+        patient_id: patientId,
         treatment_id: form.treatment_id,
         requested_date: slot.date,
         requested_time: slot.time,
-        notes: form.notes,
+        notes: form.notes || null,
       });
+
       onSuccess({ ...form, phone: cleaned, slot });
     } catch (err) {
-      setError(err.response?.data?.error || 'Bir hata oluştu, lütfen tekrar deneyin.');
+      const msg = err.response?.data?.error || err.message || '';
+      if (msg.includes('session_requests') || msg.includes('relation')) {
+        setError('Randevu sistemi henüz yapılandırılmamış. Lütfen bizimle iletişime geçin.');
+      } else {
+        setError(msg || 'Bir hata oluştu, lütfen tekrar deneyin.');
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
-  const formatDate = (d) => new Date(d).toLocaleDateString('tr-TR', {
+  const formatDate = (d) => new Date(d + 'T00:00:00').toLocaleDateString('tr-TR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
 
@@ -147,8 +174,9 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-[12px] text-red-600 flex items-center gap-2">
-              <span className="shrink-0">⚠️</span> {error}
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-[12px] text-red-600 flex items-start gap-2">
+              <span className="shrink-0 mt-0.5">⚠️</span>
+              <span>{error}</span>
             </div>
           )}
 
@@ -158,7 +186,10 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
             className="w-full h-12 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-xl text-[14px] font-semibold hover:from-teal-700 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-200"
           >
             {submitting ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Gönderiliyor...</span>
+              </>
             ) : (
               <><CheckCircle size={16} /> Randevu Talebi Gönder</>
             )}

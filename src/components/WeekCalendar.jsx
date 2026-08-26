@@ -206,7 +206,7 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
                 style={{ gridTemplateColumns: '64px repeat(7, 1fr)' }}
               >
                 {/* Time label */}
-                <div className="flex items-center justify-center py-1.5 bg-gray-50/40 border-r border-gray-100">
+                <div className="flex items-center justify-center py-0.5 bg-gray-50/40 border-r border-gray-100">
                   <span className="text-[12px] font-semibold text-gray-500">{hour}</span>
                 </div>
 
@@ -227,8 +227,8 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
                   return (
                     <div
                       key={i}
-                      className={`mx-1 my-1 rounded-xl flex flex-col items-center justify-center transition-all duration-150 select-none ${style.cell} ${isToday && status === 'free' ? 'ring-2 ring-teal-300' : ''}`}
-                      style={{ minHeight: '52px' }}
+                      className={`mx-0.5 my-0.5 rounded-lg flex flex-col items-center justify-center transition-all duration-150 select-none ${style.cell} ${isToday && status === 'free' ? 'ring-2 ring-teal-300' : ''}`}
+                      style={{ minHeight: '36px' }}
                       onClick={() => {
                         if (status === 'free') {
                           onSlotClick({ date: dateStr, time: hour });
@@ -238,8 +238,8 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
                     >
                       {status !== 'past' && (
                         <>
-                          <span className="text-[14px] leading-none">{style.icon}</span>
-                          <span className="text-[9px] mt-0.5 font-medium opacity-80">{style.label}</span>
+                          <span className="text-[12px] leading-none">{style.icon}</span>
+                          <span className="text-[8px] font-medium opacity-80">{style.label}</span>
                         </>
                       )}
                     </div>
