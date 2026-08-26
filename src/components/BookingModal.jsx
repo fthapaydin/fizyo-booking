@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '../lib/api';
-import { X, User, Phone, Stethoscope, MessageSquare, CheckCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { X, User, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle } from 'lucide-react';
 
 export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
   const [form, setForm] = useState({ full_name: '', phone: '', treatment_id: '', notes: '' });
@@ -13,17 +12,25 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
   const handlePhone = (e) => {
     const cleaned = e.target.value.replace(/\D/g, '').slice(0, 11);
     set('phone', cleaned);
+    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    const cleaned = form.phone.replace(/\D/g, '');
-    if (cleaned.length < 10) {
-      setError('Lütfen geçerli bir telefon numarası girin (10-11 hane).');
+    const trimmedName = form.full_name.trim();
+    if (!trimmedName || trimmedName.length < 3) {
+      setError('Lütfen geçerli bir Ad Soyad giriniz.');
       return;
     }
+
+    const cleaned = form.phone.replace(/\D/g, '');
+    if (!cleaned.startsWith('05') || cleaned.length !== 11) {
+      setError('Telefon numarası "05" ile başlamalı ve tam 11 haneli olmalıdır (Örn: 05XXXXXXXXX).');
+      return;
+    }
+
     if (!form.treatment_id) {
       setError('Lütfen bir tedavi/hizmet seçin.');
       return;
@@ -31,44 +38,45 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
 
     setSubmitting(true);
     try {
-      // 1. Hastayı telefona göre ara
-      let patientId = null;
-      try {
-        const patRes = await axios.get(`${API_URL}/patients/by-phone/${cleaned}`);
-        patientId = patRes.data?.id;
-      } catch {
-        // Bulunamadı — yeni hasta oluştur
+      // 1. Sistemde kayıtlı hasta mı kontrol et (Sadece kayıtlı hastalar talep oluşturabilir)
+      const { data: existingPatient, error: searchErr } = await supabase
+        .from('patients')
+        .select('id, full_name, phone')
+        .ilike('phone', `%${cleaned}%`)
+        .limit(1)
+        .maybeSingle();
+
+      if (searchErr) throw searchErr;
+
+      if (!existingPatient) {
+        setError('Girdiğiniz telefon numarası sistemimizde kayıtlı bulunamadı. Randevu talebi oluşturabilmek için lütfen kliniğimiz ile iletişime geçiniz.');
+        setSubmitting(false);
+        return;
       }
 
-      // 2. Hasta yoksa oluştur
-      if (!patientId) {
-        const newPatRes = await axios.post(`${API_URL}/patients`, {
-          full_name: form.full_name.trim(),
-          phone: cleaned,
-          total_sessions: 10,
-        });
-        patientId = newPatRes.data?.id;
-      }
+      // 2. Randevu talebi oluştur
+      const { error: reqErr } = await supabase
+        .from('session_requests')
+        .insert([{
+          patient_id: existingPatient.id,
+          treatment_id: form.treatment_id,
+          requested_date: slot.date,
+          requested_time: slot.time,
+          notes: form.notes?.trim() || null,
+          status: 'bekliyor',
+        }]);
 
-      if (!patientId) throw new Error('Hasta kaydı oluşturulamadı.');
+      if (reqErr) throw reqErr;
 
-      // 3. Randevu talebi oluştur
-      await axios.post(`${API_URL}/session-requests`, {
-        patient_id: patientId,
-        treatment_id: form.treatment_id,
-        requested_date: slot.date,
-        requested_time: slot.time,
-        notes: form.notes || null,
+      onSuccess({
+        ...form,
+        full_name: existingPatient.full_name || trimmedName,
+        phone: cleaned,
+        slot
       });
-
-      onSuccess({ ...form, phone: cleaned, slot });
     } catch (err) {
-      const msg = err.response?.data?.error || err.message || '';
-      if (msg.includes('session_requests') || msg.includes('relation')) {
-        setError('Randevu sistemi henüz yapılandırılmamış. Lütfen bizimle iletişime geçin.');
-      } else {
-        setError(msg || 'Bir hata oluştu, lütfen tekrar deneyin.');
-      }
+      console.error(err);
+      setError(err.message || 'Bir hata oluştu, lütfen tekrar deneyin.');
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +92,7 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="bg-gradient-to-r from-teal-600 to-emerald-500 px-6 py-5 text-white">
           <button
@@ -111,13 +119,100 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
               <input
                 required
                 type="text"
-                placeholder="Ahmet Yılmaz"
+                placeholder="Adınız Soyadınız"
                 value={form.full_name}
-                onChange={e => set('full_name', e.target.value)}
+                onChange={e => { set('full_name', e.target.value); if (error) setError(''); }}
                 className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 text-[14px] focus:border-teal-400 focus:ring-2 focus:ring-teal-100 outline-none transition-all"
               />
             </div>
           </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-[12px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Telefon Numarası (05XXXXXXXXX) *</label>
+            <div className="relative">
+              <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                required
+                type="tel"
+                inputMode="numeric"
+                maxLength={11}
+                placeholder="05XXXXXXXXX"
+                value={form.phone}
+                onChange={handlePhone}
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 text-[14px] font-medium tracking-wide focus:border-teal-400 focus:ring-2 focus:ring-teal-100 outline-none transition-all"
+              />
+            </div>
+            <p className="text-[11px] text-gray-400 mt-1">Sadece kliniğimizde kayıtlı telefon numaraları ile talep oluşturulabilir.</p>
+          </div>
+
+          {/* Treatment */}
+          <div>
+            <label className="block text-[12px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Tedavi / Hizmet *</label>
+            <div className="relative">
+              <Stethoscope size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <select
+                required
+                value={form.treatment_id}
+                onChange={e => { set('treatment_id', e.target.value); if (error) setError(''); }}
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 text-[14px] focus:border-teal-400 focus:ring-2 focus:ring-teal-100 outline-none transition-all bg-white appearance-none"
+              >
+                <option value="">Seçiniz...</option>
+                {treatments.map(t => (
+                  <option key={t.id} value={t.id}>{t.name} ({t.price} ₺)</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-[12px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
+              Not <span className="text-gray-400 normal-case font-normal">(isteğe bağlı)</span>
+            </label>
+            <div className="relative">
+              <MessageSquare size={15} className="absolute left-3.5 top-3 text-gray-400" />
+              <textarea
+                rows={2}
+                placeholder="Şikayetiniz veya iletmek istediğiniz bilgiler..."
+                value={form.notes}
+                onChange={e => set('notes', e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:border-teal-400 focus:ring-2 focus:ring-teal-100 outline-none transition-all resize-none"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 text-[12px] text-red-700 flex items-start gap-2.5 leading-relaxed">
+              <AlertTriangle size={16} className="shrink-0 mt-0.5 text-red-500" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting || !form.full_name.trim() || form.phone.length !== 11 || !form.phone.startsWith('05') || !form.treatment_id}
+            className="w-full h-12 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-xl text-[14px] font-semibold hover:from-teal-700 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-200"
+          >
+            {submitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Kontrol ediliyor...</span>
+              </>
+            ) : (
+              <><CheckCircle size={16} /> Randevu Talebi Gönder</>
+            )}
+          </button>
+
+          <p className="text-center text-[11px] text-gray-400">
+            Talebiniz klinik tarafından onaylandıktan sonra sizinle iletişime geçilecektir.
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 
           {/* Phone */}
           <div>
