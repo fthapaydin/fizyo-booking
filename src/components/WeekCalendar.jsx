@@ -26,7 +26,8 @@ function getMondayOfWeek(date) {
 }
 
 function toDateStr(d) {
-  return d.toISOString().split('T')[0];
+  const local = new Date(d.getTime() - (d.getTimezoneOffset() * 60000));
+  return local.toISOString().split('T')[0];
 }
 
 function normalizeTime(t) {
@@ -195,7 +196,7 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
                     cellClass += " bg-orange-50";
                     content = <div className="absolute inset-1 rounded-md border border-orange-100 flex items-center justify-center"><span className="text-[11px] font-bold text-orange-400 uppercase tracking-wide">Talep</span></div>;
                   } else if (status === 'free') {
-                    cellClass += ` bg-emerald-50/40 hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-200/50 hover:z-10 cursor-pointer ${isToday ? 'bg-teal-50/50' : ''}`;
+                    cellClass += ` bg-emerald-100/60 border border-emerald-100 hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-200/50 hover:z-10 hover:border-emerald-500 cursor-pointer ${isToday ? 'bg-emerald-200/60' : ''}`;
                     content = (
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <span className="text-white text-[12px] font-bold tracking-wider">+ RANDEVU</span>
