@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../lib/api';
+import { supabase } from '../lib/supabase';
 import WeekCalendar from '../components/WeekCalendar';
 import BookingModal from '../components/BookingModal';
 import { Activity, Clock, RefreshCw, ArrowLeft } from 'lucide-react';
@@ -16,14 +17,14 @@ export default function Calendar({ onSuccess, onBack }) {
   const fetchData = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     try {
-      const [s, r, t] = await Promise.all([
-        axios.get(`${API_URL}/sessions`).catch(() => ({ data: [] })),
-        axios.get(`${API_URL}/session-requests`).catch(() => ({ data: [] })),
-        axios.get(`${API_URL}/treatments`).catch(() => ({ data: [] })),
+      const [sRes, rRes, tRes] = await Promise.all([
+        supabase.from('sessions').select('*'),
+        supabase.from('session_requests').select('*'),
+        supabase.from('treatments').select('*'),
       ]);
-      setSessions(s.data);
-      setSessionRequests(r.data);
-      setTreatments(t.data);
+      setSessions(sRes.data || []);
+      setSessionRequests(rRes.data || []);
+      setTreatments(tRes.data || []);
     } finally {
       setLoading(false);
       setRefreshing(false);
