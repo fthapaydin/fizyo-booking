@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { X, User, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle } from 'lucide-react';
 
-export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
+export default function BookingModal({ clinic, slot, treatments, onClose, onSuccess }) {
   const [form, setForm] = useState({ full_name: '', phone: '', treatment_id: '', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -38,18 +38,22 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
 
     setSubmitting(true);
     try {
-      // 1. Sistemde kayıtlı hasta mı kontrol et (Sadece kayıtlı hastalar talep oluşturabilir)
-      const { data: existingPatient, error: searchErr } = await supabase
+      // 1. Sistemde kayıtlı hasta mı kontrol et (Sadece kliniğin kayıtlı hastaları talep oluşturabilir)
+      let patientQuery = supabase
         .from('patients')
         .select('id, full_name, phone')
-        .ilike('phone', `%${cleaned}%`)
-        .limit(1)
-        .maybeSingle();
+        .ilike('phone', `%${cleaned}%`);
+
+      if (clinic?.id) {
+        patientQuery = patientQuery.eq('clinic_id', clinic.id);
+      }
+
+      const { data: existingPatient, error: searchErr } = await patientQuery.limit(1).maybeSingle();
 
       if (searchErr) throw searchErr;
 
       if (!existingPatient) {
-        setError('Girdiğiniz telefon numarası sistemimizde kayıtlı bulunamadı. Randevu talebi oluşturabilmek için lütfen kliniğimiz ile iletişime geçiniz.');
+        setError(`Girdiğiniz telefon numarası ${clinic?.name || 'kliniğimiz'} sisteminde kayıtlı bulunamadı. Randevu talebi oluşturabilmek için lütfen kliniğimiz ile iletişime geçiniz.`);
         setSubmitting(false);
         return;
       }
@@ -58,6 +62,7 @@ export default function BookingModal({ slot, treatments, onClose, onSuccess }) {
       const { error: reqErr } = await supabase
         .from('session_requests')
         .insert([{
+          clinic_id: clinic?.id || null,
           patient_id: existingPatient.id,
           treatment_id: form.treatment_id,
           requested_date: slot.date,

@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_URL } from '../lib/api';
 import { supabase } from '../lib/supabase';
 import WeekCalendar from '../components/WeekCalendar';
 import BookingModal from '../components/BookingModal';
-import { Activity, Clock, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Activity, Clock, RefreshCw, ArrowLeft, Phone, MapPin } from 'lucide-react';
 
-export default function Calendar({ onSuccess, onBack }) {
+export default function Calendar({ clinic, onSuccess, onBack }) {
   const [sessions, setSessions] = useState([]);
   const [sessionRequests, setSessionRequests] = useState([]);
   const [treatments, setTreatments] = useState([]);
@@ -14,17 +12,29 @@ export default function Calendar({ onSuccess, onBack }) {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
+  const clinicName = clinic?.name || 'Fizyoterapi Kliniği';
+  const clinicPhone = clinic?.phone || '0555 555 55 55';
+  const clinicAddress = clinic?.address || 'Merkez';
+
   const fetchData = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     try {
-      const [sRes, rRes, tRes] = await Promise.all([
-        supabase.from('sessions').select('*'),
-        supabase.from('session_requests').select('*'),
-        supabase.from('treatments').select('*'),
-      ]);
+      let sQuery = supabase.from('sessions').select('*');
+      let rQuery = supabase.from('session_requests').select('*');
+      let tQuery = supabase.from('treatments').select('*').order('created_at', { ascending: true });
+
+      if (clinic?.id) {
+        sQuery = sQuery.eq('clinic_id', clinic.id);
+        rQuery = rQuery.eq('clinic_id', clinic.id);
+        tQuery = tQuery.eq('clinic_id', clinic.id);
+      }
+
+      const [sRes, rRes, tRes] = await Promise.all([sQuery, rQuery, tQuery]);
       setSessions(sRes.data || []);
       setSessionRequests(rRes.data || []);
       setTreatments(tRes.data || []);
+    } catch (err) {
+      console.error('Takvim verisi yüklenirken hata:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -33,9 +43,9 @@ export default function Calendar({ onSuccess, onBack }) {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(() => fetchData(), 60000);
+    const interval = setInterval(() => fetchData(), 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [clinic?.id]);
 
   const handleSuccess = (bookingInfo) => {
     setSelectedSlot(null);
@@ -52,7 +62,7 @@ export default function Calendar({ onSuccess, onBack }) {
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[13px] font-medium text-gray-500 hover:bg-gray-50 transition-all"
+              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[13px] font-medium text-gray-500 hover:bg-gray-50 transition-all cursor-pointer"
             >
               <ArrowLeft size={15} />
               Geri
@@ -61,13 +71,13 @@ export default function Calendar({ onSuccess, onBack }) {
               <div className="w-8 h-8 bg-gradient-to-br from-teal-600 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
                 <Activity size={15} className="text-white" strokeWidth={2.5} />
               </div>
-              <span className="text-[15px] font-bold text-gray-900">Fizyoterapi Kliniği</span>
+              <span className="text-[15px] font-bold text-gray-900">{clinicName}</span>
             </div>
           </div>
           <button
             onClick={() => fetchData(true)}
             disabled={refreshing}
-            className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
             Yenile
@@ -109,13 +119,21 @@ export default function Calendar({ onSuccess, onBack }) {
               <div className="w-7 h-7 bg-gradient-to-br from-teal-600 to-emerald-500 rounded-lg flex items-center justify-center">
                 <Activity size={13} className="text-white" />
               </div>
-              <span className="text-[14px] font-bold text-gray-700">Fizyoterapi Kliniği</span>
+              <span className="text-[14px] font-bold text-gray-700">{clinicName}</span>
             </div>
-            <div className="flex items-center gap-2 text-[12px] text-gray-400">
-              <Clock size={13} />
-              <span>Hafta İçi &amp; Hafta Sonu 08:00 – 20:00</span>
+            <div className="flex flex-wrap items-center gap-5 text-[12px] text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <Phone size={13} className="text-teal-600" />
+                <span>{clinicPhone}</span>
+              </div>
+              {clinicAddress && (
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={13} className="text-teal-600" />
+                  <span>{clinicAddress}</span>
+                </div>
+              )}
             </div>
-            <p className="text-[11px] text-gray-400">© 2026 Fizyoterapi Kliniği</p>
+            <p className="text-[11px] text-gray-400">© 2026 {clinicName}</p>
           </div>
         </div>
       </footer>
@@ -123,6 +141,7 @@ export default function Calendar({ onSuccess, onBack }) {
       {/* Booking Modal */}
       {selectedSlot && (
         <BookingModal
+          clinic={clinic}
           slot={selectedSlot}
           treatments={treatments}
           onClose={() => setSelectedSlot(null)}

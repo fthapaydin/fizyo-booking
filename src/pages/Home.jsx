@@ -1,6 +1,10 @@
-import { Activity, Clock, CheckCircle, Star } from 'lucide-react';
+import { Activity, Clock, CheckCircle, Star, Phone, MapPin } from 'lucide-react';
 
-export default function Home({ onCalendar }) {
+export default function Home({ clinic, onCalendar }) {
+  const clinicName = clinic?.name || 'Fizyoterapi Kliniği';
+  const clinicPhone = clinic?.phone || '0555 555 55 55';
+  const clinicAddress = clinic?.address || 'Merkez';
+
   const features = [
     { icon: CheckCircle, title: 'Uzman Kadro', desc: 'Alanında uzman fizyoterapistlerle' },
     { icon: Clock, title: 'Esnek Saatler', desc: '08:00 – 20:00 arası randevu imkânı' },
@@ -17,7 +21,7 @@ export default function Home({ onCalendar }) {
             <div className="w-8 h-8 bg-gradient-to-br from-teal-600 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
               <Activity size={15} className="text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-[15px] font-bold text-gray-900">Fizyoterapi Kliniği</span>
+            <span className="text-[15px] font-bold text-gray-900">{clinicName}</span>
           </div>
           <button
             onClick={onCalendar}
@@ -38,8 +42,8 @@ export default function Home({ onCalendar }) {
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
           Randevunuzu<br />
           <span className="bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent">
-            Kolayca Planlayın
-          </span>
+            {clinicName}
+          </span> ile Kolayca Planlayın
         </h1>
         <p className="text-[16px] text-gray-500 max-w-xl mx-auto mb-8 leading-relaxed">
           Müsait saatleri takvimden seçin, adınız ve telefon numaranızla dakikalar içinde randevu talebinde bulunun.
@@ -73,13 +77,21 @@ export default function Home({ onCalendar }) {
               <div className="w-7 h-7 bg-gradient-to-br from-teal-600 to-emerald-500 rounded-lg flex items-center justify-center">
                 <Activity size={13} className="text-white" />
               </div>
-              <span className="text-[14px] font-bold text-gray-700">Fizyoterapi Kliniği</span>
+              <span className="text-[14px] font-bold text-gray-700">{clinicName}</span>
             </div>
-            <div className="flex items-center gap-2 text-[12px] text-gray-400">
-              <Clock size={13} />
-              <span>Hafta İçi &amp; Hafta Sonu 08:00 – 20:00</span>
+            <div className="flex flex-wrap items-center gap-5 text-[12px] text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <Phone size={13} className="text-teal-600" />
+                <span>{clinicPhone}</span>
+              </div>
+              {clinicAddress && (
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={13} className="text-teal-600" />
+                  <span>{clinicAddress}</span>
+                </div>
+              )}
             </div>
-            <p className="text-[11px] text-gray-400">© 2026 Fizyoterapi Kliniği</p>
+            <p className="text-[11px] text-gray-400">© 2026 {clinicName}</p>
           </div>
         </div>
       </footer>
