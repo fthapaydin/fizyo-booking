@@ -160,18 +160,14 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 bg-white py-8">
+      <footer className="border-t border-gray-200 bg-white py-8 mt-12">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              {clinic?.logo_url ? (
-                <img src={clinic.logo_url} alt="Logo" className="w-7 h-7 rounded-lg object-contain" />
-              ) : (
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white" style={{ backgroundColor: themeColor }}>
-                  <Activity size={13} />
-                </div>
-              )}
-              <span className="text-[14px] font-bold text-gray-700">{clinicName}</span>
+              <div className="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
+                <Activity size={13} />
+              </div>
+              <span className="text-[14px] font-bold text-gray-800">{clinicName}</span>
             </div>
             <div className="flex flex-wrap items-center gap-5 text-[12px] text-gray-500">
               <div className="flex items-center gap-1.5">
@@ -185,7 +181,12 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
                 </div>
               )}
             </div>
-            <p className="text-[11px] text-gray-400">© 2026 {clinicName}</p>
+            <div className="text-center md:text-right">
+              <p className="text-[11px] text-gray-500">FizyoPanel by <strong className="text-gray-700">FatalSoft</strong></p>
+              <a href="mailto:fatalsoft.inc@gmail.com" className="text-[11px] text-teal-600 hover:underline">
+                fatalsoft.inc@gmail.com
+              </a>
+            </div>
           </div>
         </div>
       </footer>
