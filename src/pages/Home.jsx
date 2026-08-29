@@ -4,7 +4,8 @@ import { TURKEY_CITIES } from '../lib/turkeyCities';
 import { 
   Activity, Clock, CheckCircle, Star, Phone, MapPin, Search, Building2, Calendar, 
   ArrowRight, ShieldCheck, Stethoscope, Sparkles, QrCode, Mail, MessageSquare, 
-  Award, CheckCircle2, ChevronRight, UserCheck, HeartHandshake, Layers, X, ExternalLink
+  Award, CheckCircle2, ChevronRight, UserCheck, HeartHandshake, Layers, X, ExternalLink,
+  Zap, Tag, Gift
 } from 'lucide-react';
 
 export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
@@ -13,8 +14,6 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const searchSectionRef = useRef(null);
 
   const selectedCityObj = TURKEY_CITIES.find((c) => c.name === selectedCity);
 
@@ -56,9 +55,8 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
     setSelectedDistrict('');
   };
 
-  const scrollToSearch = (e) => {
-    if (e) e.preventDefault();
-    const el = document.getElementById('search-section');
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -92,7 +90,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 <Activity size={16} strokeWidth={2.5} />
               </div>
             )}
-            <div className="truncate max-w-[170px] sm:max-w-xs">
+            <div className="truncate max-w-[160px] sm:max-w-xs">
               <span className="text-[14px] sm:text-[15px] font-extrabold text-gray-900 tracking-tight block truncate">
                 {isSpecificClinicMode ? clinic.name : 'FizyoPanel'}
               </span>
@@ -113,14 +111,21 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             ) : (
               <>
                 <button
-                  onClick={scrollToSearch}
+                  onClick={() => scrollToSection('search-section')}
                   className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl text-[12px] font-semibold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                 >
                   <Search size={14} className="text-teal-600" />
                   <span className="hidden sm:inline">Klinik Ara</span>
                 </button>
+                <button
+                  onClick={() => scrollToSection('pricing-section')}
+                  className="hidden md:inline-flex items-center gap-1.5 h-9 px-3 rounded-xl text-[12px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors cursor-pointer"
+                >
+                  <Tag size={13} />
+                  <span>Fiyatlar</span>
+                </button>
                 <a
-                  href="#saas-section"
+                  href="#pricing-section"
                   className="h-9 px-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[11px] sm:text-[12px] font-semibold transition-all shadow-sm flex items-center gap-1.5 shrink-0"
                 >
                   <span>Klinikler İçin</span>
@@ -180,18 +185,18 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             ) : (
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
                 <button
-                  onClick={scrollToSearch}
+                  onClick={() => scrollToSection('search-section')}
                   className="w-full sm:w-auto h-12 px-7 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-2xl text-[14px] font-bold hover:from-teal-700 hover:to-emerald-600 transition-all shadow-lg shadow-teal-200 inline-flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Search size={16} />
                   <span>İl &amp; İlçe Seçerek Klinik Bul</span>
                 </button>
-                <a
-                  href="#how-it-works"
-                  className="w-full sm:w-auto h-12 px-6 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl text-[14px] font-semibold transition-all shadow-2xs inline-flex items-center justify-center gap-1.5"
+                <button
+                  onClick={() => scrollToSection('how-it-works')}
+                  className="w-full sm:w-auto h-12 px-6 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl text-[14px] font-semibold transition-all shadow-2xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <span>Nasıl Çalışır?</span>
-                </a>
+                </button>
               </div>
             )}
 
@@ -203,7 +208,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 </div>
                 <div>
                   <p className="text-[12px] font-bold text-gray-900">81 İl Desteği</p>
-                  <p className="text-[10px] text-gray-400">Türkiye genelinde</p>
+                  <p className="text-[10px] text-gray-400">A'dan Z'ye tüm iller</p>
                 </div>
               </div>
 
@@ -241,8 +246,8 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
         </section>
 
         {/* ─── 3. HOW IT WORKS (3 ADIMDA RANDEVU) ────────────────── */}
-        <section id="how-it-works" className="max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-16 scroll-mt-20">
-          <div className="text-center max-w-xl mx-auto mb-10">
+        <section id="how-it-works" className="max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-20 scroll-mt-28">
+          <div className="text-center max-w-xl mx-auto mb-12">
             <span className="text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-100 px-3 py-1 rounded-full uppercase tracking-wider">
               Kolay &amp; Hızlı
             </span>
@@ -315,7 +320,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
         </section>
 
         {/* ─── 5. QR CODE STAND BANNER ──────────────────────────── */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-14">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 md:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
             <div className="space-y-3 max-w-lg text-left">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/30 border border-indigo-400/30 text-[11px] font-semibold text-indigo-200">
@@ -339,18 +344,18 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
           </div>
         </section>
 
-        {/* ─── 6. CITY & DISTRICT CLINIC SEARCH ENGINE (SCROLL TARGET) ── */}
-        <section id="search-section" className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 pt-4 scroll-mt-20">
+        {/* ─── 6. CITY & DISTRICT CLINIC SEARCH ENGINE ──────────── */}
+        <section id="search-section" className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 pt-4 scroll-mt-28">
           <div className="bg-white rounded-3xl border border-gray-200/90 p-5 sm:p-7 md:p-8 shadow-xl shadow-slate-200/50">
             <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
               <MapPin size={18} className="text-teal-600" />
-              <h2 className="text-[16px] sm:text-[17px] font-bold text-gray-800">Şehir &amp; İlçe Seçerek Klinik Bul</h2>
+              <h2 className="text-[16px] sm:text-[17px] font-bold text-gray-800">Şehir &amp; İlçe Seçerek Klinik Bul (A-Z Alfabetik)</h2>
             </div>
 
             {/* Search Inputs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 mb-6">
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Şehir (İl)</label>
+                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Şehir (İl) - 81 İl</label>
                 <select
                   value={selectedCity}
                   onChange={(e) => handleCityChange(e.target.value)}
@@ -475,10 +480,137 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             </div>
           </div>
         </section>
+
+        {/* ─── 7. PRICING & CAMPAIGN SECTION ────────────────────── */}
+        <section id="pricing-section" className="bg-gradient-to-b from-slate-50/80 via-teal-50/20 to-white py-16 sm:py-20 border-t border-gray-200/80 scroll-mt-28">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6">
+            
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100/70 border border-emerald-200 text-emerald-800 text-[12px] font-bold mb-3">
+                <Gift size={13} className="text-emerald-700" />
+                <span>Lansmana Özel Avantajlı Fiyatlandırma</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
+                Şeffaf, Ekonomik &amp; Esnek Fiyatlar
+              </h2>
+              <p className="text-[14px] text-gray-500 mt-2">
+                Gizli maliyet yok. 14 gün ücretsiz deneyin, kliniğinizi bugün dijitalleştirin.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+              
+              {/* Plan 1: Aylık */}
+              <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative">
+                <div>
+                  <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wider">Aylık Abonelik</span>
+                  <h3 className="text-2xl font-extrabold text-gray-900 mt-1 mb-3">Standart Plan</h3>
+                  <div className="flex items-baseline gap-1.5 mb-6 pb-6 border-b border-gray-100">
+                    <span className="text-4xl font-black text-gray-900">₺250</span>
+                    <span className="text-gray-400 font-medium text-sm">/ ay</span>
+                  </div>
+
+                  <ul className="space-y-3 text-[13px] text-gray-600 mb-8">
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>Sınırsız Hasta ve Randevu Kaydı</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>Canlı Online Randevu Takvimi</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>Çoklu Terapist ve Yetki Yönetimi (RBAC)</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>WhatsApp Randevu Onay Bildirimleri</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>Masaüstü / Danışma QR Standı Üretici</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>81 İl Arama Portalı Listelemesi</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <a
+                  href="mailto:fatalsoft.inc@gmail.com?subject=FizyoPanel%20Ayl%C4%B1k%20Abonelik%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Ayl%C4%B1k%20(250%20TL)%20paket%20ile%20ba%C5%9Flamak%20istiyoruz."
+                  className="w-full h-12 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white font-bold text-[14px] flex items-center justify-center gap-2 transition-all shadow-sm"
+                >
+                  <span>14 Gün Ücretsiz Başla</span>
+                  <ArrowRight size={15} />
+                </a>
+              </div>
+
+              {/* Plan 2: Yıllık Kampanyalı (Öne Çıkan) */}
+              <div className="bg-gradient-to-b from-slate-900 to-indigo-950 text-white rounded-3xl border-2 border-indigo-500/50 p-8 shadow-2xl hover:shadow-indigo-500/20 transition-all flex flex-col justify-between relative overflow-hidden">
+                
+                {/* Campaign Tag */}
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wide shadow-md">
+                  %33 İNDİRİM • 4 AY BEDAVA
+                </div>
+
+                <div>
+                  <span className="text-[12px] font-bold text-indigo-300 uppercase tracking-wider">Yıllık Lansman Kampanyası</span>
+                  <h3 className="text-2xl font-extrabold text-white mt-1 mb-3">Yıllık Avantajlı Plan</h3>
+                  
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-4xl font-black text-white">₺2.000</span>
+                    <span className="text-slate-400 font-medium text-sm">/ yıl</span>
+                    <span className="text-xs line-through text-slate-400">₺3.000</span>
+                  </div>
+                  <p className="text-[12px] text-emerald-400 font-semibold mb-6 pb-6 border-b border-slate-800">
+                    Ayda sadece ~₺166'ya denk gelir!
+                  </p>
+
+                  <ul className="space-y-3 text-[13px] text-slate-200 mb-8">
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span><strong>Tüm Standart Plan Özellikleri</strong></span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span><strong>4 Ay Ücretsiz</strong> Kullanım Avantajı</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Öncelikli 7/24 Teknik &amp; Canlı Destek</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Ücretsiz Kurulum &amp; Eski Hasta Veri Aktarımı</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Şehir/İlçe Portalında <strong>Öne Çıkan Klinik</strong> Rozeti</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Yıl Boyunca Fiyat Artışından Etkilenmeme Garantisi</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <a
+                  href="mailto:fatalsoft.inc@gmail.com?subject=FizyoPanel%20Y%C4%B1ll%C4%B1k%20Kampanya%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Y%C4%B1ll%C4%B1k%20(2.000%20TL)%20Lansman%20Kampanyas%C4%B1ndan%20faydalanmak%20istiyoruz."
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-[14px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  <span>Kampanyadan Faydalan &amp; Başla</span>
+                  <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* ─── 7. FATALSOFT SAAS SALES & CONTACT FOOTER ─────────── */}
-      <footer id="saas-section" className="bg-slate-950 text-slate-400 border-t border-slate-800 scroll-mt-20">
+      {/* ─── 8. FATALSOFT SAAS SALES & CONTACT FOOTER ─────────── */}
+      <footer id="saas-section" className="bg-slate-950 text-slate-400 border-t border-slate-800 scroll-mt-28">
         
         {/* Top CTA Banner for Clinics */}
         <div className="border-b border-slate-800/80 bg-gradient-to-b from-slate-900 to-slate-950 py-12 sm:py-14">
