@@ -28,13 +28,6 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
       let tQuery = supabase.from('treatments').select('*').order('created_at', { ascending: true });
       let staffQuery = supabase.from('staff').select('*').eq('is_active', true).order('created_at', { ascending: true });
 
-      if (clinic?.id) {
-        sQuery = sQuery.eq('clinic_id', clinic.id);
-        rQuery = rQuery.eq('clinic_id', clinic.id);
-        tQuery = tQuery.eq('clinic_id', clinic.id);
-        staffQuery = staffQuery.eq('clinic_id', clinic.id);
-      }
-
       const [sRes, rRes, tRes, staffRes] = await Promise.all([sQuery, rQuery, tQuery, staffQuery]);
       setSessions(sRes.data || []);
       setSessionRequests(rRes.data || []);
@@ -57,12 +50,12 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
   // Therapist-scoped sessions
   const filteredSessions = useMemo(() => {
     if (selectedTherapistId === 'all') return sessions;
-    return sessions.filter((s) => s.therapist_id === selectedTherapistId);
+    return sessions.filter((s) => !s.therapist_id || s.therapist_id === selectedTherapistId);
   }, [sessions, selectedTherapistId]);
 
   const filteredRequests = useMemo(() => {
     if (selectedTherapistId === 'all') return sessionRequests;
-    return sessionRequests.filter((r) => r.therapist_id === selectedTherapistId);
+    return sessionRequests.filter((r) => !r.therapist_id || r.therapist_id === selectedTherapistId);
   }, [sessionRequests, selectedTherapistId]);
 
   const handleSuccess = (bookingInfo) => {

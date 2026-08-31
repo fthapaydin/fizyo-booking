@@ -42,6 +42,11 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
       return;
     }
 
+    if (staff.length > 1 && !form.therapist_id) {
+      setError('Lütfen seansı yapacak fizyoterapisti seçiniz.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       // 1. Sistemde kayıtlı hasta mı kontrol et (Sadece kliniğin kayıtlı hastaları talep oluşturabilir)
@@ -71,7 +76,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
           clinic_id: clinic?.id || null,
           patient_id: existingPatient.id,
           treatment_id: form.treatment_id,
-          therapist_id: form.therapist_id || null,
+          therapist_id: form.therapist_id || (staff.length === 1 ? staff[0].id : null),
           requested_date: slot.date,
           requested_time: slot.time,
           notes: form.notes?.trim() || null,
@@ -210,16 +215,17 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
           {staff.length > 0 && (
             <div>
               <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-                Fizyoterapist Tercihi (İsteğe Bağlı)
+                Fizyoterapist {staff.length > 1 ? <span className="text-red-500">*</span> : '(İsteğe Bağlı)'}
               </label>
               <div className="relative">
                 <UserCheck size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <select
+                  required={staff.length > 1}
                   value={form.therapist_id}
                   onChange={e => set('therapist_id', e.target.value)}
                   className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-white appearance-none cursor-pointer"
                 >
-                  <option value="">Fark Etmez / İlk Müsait Terapist</option>
+                  <option value="">{staff.length > 1 ? 'Fizyoterapist seçiniz *' : 'Fark Etmez / İlk Müsait Terapist'}</option>
                   {staff.map(s => (
                     <option key={s.id} value={s.id}>
                       {s.full_name} ({s.title || 'Fzt.'})
