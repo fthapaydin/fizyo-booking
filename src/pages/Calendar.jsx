@@ -13,6 +13,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [showLookup, setShowLookup] = useState(false);
 
   const clinicName = clinic?.name || 'Fizyoterapi Kliniği';
   const clinicPhone = clinic?.phone || '0555 555 55 55';
@@ -98,14 +99,23 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
               <span className="text-[15px] font-bold text-gray-900">{clinicName}</span>
             </div>
           </div>
-          <button
-            onClick={() => fetchData(true)}
-            disabled={refreshing}
-            className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50 cursor-pointer"
-          >
-            <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
-            Yenile
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowLookup(true)}
+              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-teal-200 bg-teal-50/80 text-teal-800 text-[12px] font-bold hover:bg-teal-100 transition-all cursor-pointer shadow-2xs"
+            >
+              <Clock size={14} className="text-teal-600" />
+              <span>Randevu Durumu Sorgula</span>
+            </button>
+            <button
+              onClick={() => fetchData(true)}
+              disabled={refreshing}
+              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+              <span className="hidden sm:inline">Yenile</span>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -203,6 +213,150 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
           onSuccess={handleSuccess}
         />
       )}
+
+      {/* Lookup Modal */}
+      {showLookup && (
+        <LookupModal clinic={clinic} onClose={() => setShowLookup(false)} />
+      )}
+    </div>
+  );
+}
+
+function LookupModal({ clinic, onClose }) {
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const [searched, setSearched] = useState(false);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    const cleaned = phone.replace(/\D/g, '');
+    if (!cleaned.startsWith('05') || cleaned.length !== 11) {
+      alert('Lütfen geçerli bir 05XXXXXXXXX telefon numarası giriniz.');
+      return;
+    }
+
+    setLoading(true);
+    setSearched(true);
+    try {
+      // 1. Hasta bul
+      let pQuery = supabase.from('patients').select('id, full_name').ilike('phone', `%${cleaned}%`);
+      if (clinic?.id) pQuery = pQuery.eq('clinic_id', clinic.id);
+      const { data: patient } = await pQuery.maybeSingle();
+
+      if (!patient) {
+        setResults({ patient: null, items: [] });
+        return;
+      }
+
+      // 2. Seanslar ve talepleri çek
+      let [sRes, rRes] = await Promise.all([
+        supabase.from('sessions').select('id, session_date, session_time, status, treatment:treatments(name), therapist:staff(full_name)').eq('patient_id', patient.id).order('session_date', { ascending: false }).limit(5),
+        supabase.from('session_requests').select('id, requested_date, requested_time, status, rejection_reason, treatment:treatments(name), therapist:staff(full_name)').eq('patient_id', patient.id).order('created_at', { ascending: false }).limit(5)
+      ]);
+
+      const items = [
+        ...(sRes.data || []).map(s => ({ ...s, date: s.session_date, time: s.session_time, type: 'session' })),
+        ...(rRes.data || []).map(r => ({ ...r, date: r.requested_date, time: r.requested_time, type: 'request' }))
+      ].sort((a, b) => b.date?.localeCompare(a.date));
+
+      setResults({ patient, items });
+    } catch (err) {
+      console.error(err);
+      alert('Sorgulama yapılırken hata oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 z-10 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🔍</span>
+            <h3 className="text-lg font-bold text-gray-900">Randevu Durumu Sorgula</h3>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center cursor-pointer">✕</button>
+        </div>
+
+        <form onSubmit={handleSearch} className="space-y-3 mb-5">
+          <label className="block text-[12px] font-semibold text-gray-600">Kayıtlı Telefon Numaranız</label>
+          <div className="flex gap-2">
+            <input
+              type="tel"
+              required
+              placeholder="05XXXXXXXXX"
+              value={phone}
+              onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+              className="flex-1 h-11 px-3.5 rounded-xl border border-gray-200 text-[13px] font-mono outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="h-11 px-5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-[13px] font-bold shadow-md shadow-teal-200 transition-all cursor-pointer disabled:opacity-50"
+            >
+              {loading ? '...' : 'Sorgula'}
+            </button>
+          </div>
+        </form>
+
+        {searched && (
+          <div className="space-y-3">
+            {!results?.patient ? (
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-center text-[13px] text-gray-500">
+                Bu telefon numarasına ait kayıtlı bir hasta veya randevu bulunamadı.
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <span className="text-[13px] font-bold text-gray-800">Sayın {results.patient.full_name}</span>
+                  <span className="text-[11px] text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded-md">Kayıtlı Hasta</span>
+                </div>
+
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                  {results.items.length === 0 ? (
+                    <p className="text-[12px] text-gray-400 text-center py-4">Henüz bir randevu kaydınız bulunmuyor.</p>
+                  ) : (
+                    results.items.map((item, i) => {
+                      const isApproved = item.status === 'onaylandi';
+                      const isPending = item.status === 'bekliyor';
+                      const isDone = item.status === 'tamamlandi';
+                      const isRejected = item.status === 'reddedildi';
+
+                      return (
+                        <div key={i} className="p-3 rounded-xl border border-gray-200/90 bg-white text-[12px] space-y-1 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-gray-900">{item.treatment?.name || 'Seans'}</span>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                              isApproved ? 'bg-blue-50 text-blue-700' :
+                              isPending ? 'bg-amber-50 text-amber-700' :
+                              isDone ? 'bg-emerald-50 text-emerald-700' :
+                              'bg-rose-50 text-rose-700'
+                            }`}>
+                              {isApproved ? '● Onaylandı' : isPending ? '⏳ Onay Bekliyor' : isDone ? '✓ Tamamlandı' : '✕ Reddedildi'}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-gray-500 flex items-center justify-between">
+                            <span>📅 {item.date} • ⏰ {item.time?.substring(0, 5)}</span>
+                            {item.therapist?.full_name && <span>Fzt. {item.therapist.full_name}</span>}
+                          </div>
+                          {item.rejection_reason && (
+                            <p className="text-[10px] text-red-600 bg-red-50 p-1.5 rounded-md mt-1">
+                              Gerekçe: {item.rejection_reason}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

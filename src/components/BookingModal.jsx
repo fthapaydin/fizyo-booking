@@ -230,16 +230,46 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
             </div>
           )}
 
-          {/* Ek Not */}
+          {/* Hızlı Şikayet / Ağrı Bölgesi Seçimi */}
           <div>
             <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Şikayetiniz / Ek Not (İsteğe Bağlı)
+              Hızlı Şikayet / Ağrı Bölgesi (Seçebilirsiniz)
             </label>
+            <div className="flex flex-wrap gap-1.5 mb-2.5">
+              {[
+                '🦴 Bel / Fıtık', '💆‍♂️ Boyun Ağrısı', '🦵 Diz & Menisküs', 
+                '🏃 Omuz / Kol', '📐 Postür & Skolyoz', '🦶 Ayak / Topuk Dikeni', '✨ Genel Kontrol'
+              ].map((tag) => {
+                const isSelected = form.notes?.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      if (isSelected) {
+                        set('notes', form.notes.replace(tag, '').trim());
+                      } else {
+                        const current = form.notes ? `${form.notes}, ${tag}` : tag;
+                        set('notes', current);
+                      }
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-teal-50 border-teal-400 text-teal-800 font-bold shadow-2xs'
+                        : 'bg-gray-50/80 border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="relative">
               <MessageSquare size={16} className="absolute left-3.5 top-3 text-gray-400" />
               <textarea
                 rows={2}
-                placeholder="Örn: Bel ağrısı, kontrol seansı..."
+                placeholder="Şikayetiniz veya eklemek istediğiniz notlar..."
                 value={form.notes}
                 onChange={e => set('notes', e.target.value)}
                 className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all resize-none"
