@@ -220,22 +220,31 @@ function LookupModal({ clinic, onClose }) {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    setSearchError('');
     const cleaned = phone.replace(/\D/g, '');
-    if (!cleaned.startsWith('05') || cleaned.length !== 11) {
-      alert('Lütfen geçerli bir 05XXXXXXXXX telefon numarası giriniz.');
+    if (cleaned.length < 10) {
+      setSearchError('Lütfen en az 10 haneli geçerli bir telefon numarası giriniz.');
       return;
     }
+
+    const last10 = cleaned.slice(-10);
 
     setLoading(true);
     setSearched(true);
     try {
-      // 1. Hasta bul
-      let pQuery = supabase.from('patients').select('id, full_name').ilike('phone', `%${cleaned}%`);
-      if (clinic?.id) pQuery = pQuery.eq('clinic_id', clinic.id);
-      const { data: patient } = await pQuery.maybeSingle();
+      // 1. Hasta bul (son 10 haneye göre esnek eşleşme)
+      const { data: patient, error: pErr } = await supabase
+        .from('patients')
+        .select('id, full_name, phone')
+        .ilike('phone', `%${last10}%`)
+        .limit(1)
+        .maybeSingle();
+
+      if (pErr) throw pErr;
 
       if (!patient) {
         setResults({ patient: null, items: [] });
@@ -243,20 +252,30 @@ function LookupModal({ clinic, onClose }) {
       }
 
       // 2. Seanslar ve talepleri çek
-      let [sRes, rRes] = await Promise.all([
-        supabase.from('sessions').select('id, session_date, session_time, status, treatment:treatments(name), therapist:staff(full_name)').eq('patient_id', patient.id).order('session_date', { ascending: false }).limit(5),
-        supabase.from('session_requests').select('id, requested_date, requested_time, status, rejection_reason, treatment:treatments(name), therapist:staff(full_name)').eq('patient_id', patient.id).order('created_at', { ascending: false }).limit(5)
+      const [sRes, rRes] = await Promise.all([
+        supabase
+          .from('sessions')
+          .select('id, session_date, session_time, status, treatment:treatments(name), therapist:staff(full_name)')
+          .eq('patient_id', patient.id)
+          .order('session_date', { ascending: false })
+          .limit(10),
+        supabase
+          .from('session_requests')
+          .select('id, requested_date, requested_time, status, rejection_reason, treatment:treatments(name), therapist:staff(full_name)')
+          .eq('patient_id', patient.id)
+          .order('created_at', { ascending: false })
+          .limit(10)
       ]);
 
       const items = [
         ...(sRes.data || []).map(s => ({ ...s, date: s.session_date, time: s.session_time, type: 'session' })),
         ...(rRes.data || []).map(r => ({ ...r, date: r.requested_date, time: r.requested_time, type: 'request' }))
-      ].sort((a, b) => b.date?.localeCompare(a.date));
+      ].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
       setResults({ patient, items });
     } catch (err) {
-      console.error(err);
-      alert('Sorgulama yapılırken hata oluştu.');
+      console.error('Sorgulama hatası:', err);
+      setSearchError('Sorgulama yapılırken bağlantı hatası oluştu. Lütfen tekrar deneyiniz.');
     } finally {
       setLoading(false);
     }
@@ -295,7 +314,14 @@ function LookupModal({ clinic, onClose }) {
           </div>
         </form>
 
-        {searched && (
+        {searchError && (
+          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-[12px] text-rose-700 mb-4 flex items-center gap-2">
+            <span>⚠️</span>
+            <span>{searchError}</span>
+          </div>
+        )}
+
+        {searched && !searchError && (
           <div className="space-y-3">
             {!results?.patient ? (
               <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-center text-[13px] text-gray-500">

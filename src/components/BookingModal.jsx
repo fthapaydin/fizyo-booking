@@ -49,22 +49,19 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
 
     setSubmitting(true);
     try {
+      const last10 = cleaned.slice(-10);
       // 1. Sistemde kayıtlı hasta mı kontrol et (Sadece kliniğin kayıtlı hastaları talep oluşturabilir)
-      let patientQuery = supabase
+      const { data: existingPatient, error: searchErr } = await supabase
         .from('patients')
         .select('id, full_name, phone')
-        .ilike('phone', `%${cleaned}%`);
-
-      if (clinic?.id) {
-        patientQuery = patientQuery.eq('clinic_id', clinic.id);
-      }
-
-      const { data: existingPatient, error: searchErr } = await patientQuery.limit(1).maybeSingle();
+        .ilike('phone', `%${last10}%`)
+        .limit(1)
+        .maybeSingle();
 
       if (searchErr) throw searchErr;
 
       if (!existingPatient) {
-        setError(`Girdiğiniz telefon numarası ${clinic?.name || 'kliniğimiz'} sisteminde kayıtlı bulunamadı. Randevu talebi oluşturabilmek için lütfen kliniğimiz ile iletişime geçiniz.`);
+        setError(`Girdiğiniz telefon numarası (${cleaned}) sistemimizde kayıtlı bulunamadı. Randevu talebi oluşturabilmek için lütfen kliniğimiz ile iletişime geçiniz.`);
         setSubmitting(false);
         return;
       }
@@ -73,7 +70,6 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
       const { error: reqErr } = await supabase
         .from('session_requests')
         .insert([{
-          clinic_id: clinic?.id || null,
           patient_id: existingPatient.id,
           treatment_id: form.treatment_id,
           therapist_id: form.therapist_id || (staff.length === 1 ? staff[0].id : null),
