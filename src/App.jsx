@@ -43,7 +43,7 @@ export default function App() {
           .maybeSingle();
 
         setClinic(defaultClinic || {
-          name: 'FizyoPanel Demo Klinik',
+          name: 'Fizyotim Demo Klinik',
           phone: '0555 555 55 55',
           city: 'İstanbul',
           district: 'Kadıköy',
@@ -83,7 +83,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={32} className="text-teal-600 animate-spin" />
-          <p className="text-[13px] text-gray-500 font-medium">FizyoPanel yükleniyor...</p>
+          <p className="text-[13px] text-gray-500 font-medium">Fizyotim yükleniyor...</p>
         </div>
       </div>
     );

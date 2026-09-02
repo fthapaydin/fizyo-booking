@@ -185,7 +185,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
               )}
             </div>
             <div className="text-center md:text-right">
-              <p className="text-[11px] text-gray-500">FizyoPanel by <strong className="text-gray-700">FatalSoft</strong></p>
+              <p className="text-[11px] text-gray-500">Fizyotim by <strong className="text-gray-700">FatalSoft</strong></p>
               <a href="mailto:fatalsoft.inc@gmail.com" className="text-[11px] text-teal-600 hover:underline">
                 fatalsoft.inc@gmail.com
               </a>

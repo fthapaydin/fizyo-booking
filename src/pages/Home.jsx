@@ -156,7 +156,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             )}
             <div>
               <span className="text-[15px] font-black text-gray-900 tracking-tight block leading-tight">
-                {isSpecificClinicMode ? clinic.name : 'FizyoPanel'}
+                {isSpecificClinicMode ? clinic.name : 'Fizyotim'}
               </span>
               <span className="text-[10px] text-teal-600 font-bold uppercase tracking-wider block leading-tight">
                 {isSpecificClinicMode ? 'Online Randevu' : 'Fizyoterapi & Sağlık'}
@@ -223,7 +223,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 rounded-full px-3.5 py-1.5 mb-5 shadow-2xs max-w-full">
               <Sparkles size={14} className="text-emerald-600 shrink-0" />
               <span className="text-[11px] sm:text-[12px] font-bold text-emerald-800 truncate">
-                {isSpecificClinicMode ? `${clinic.name} • Canlı Randevu Portalı` : 'FizyoPanel • 81 İlde Fizyoterapi & Manuel Terapi Randevusu'}
+                {isSpecificClinicMode ? `${clinic.name} • Canlı Randevu Portalı` : 'Fizyotim • 81 İlde Fizyoterapi & Manuel Terapi Randevusu'}
               </span>
             </div>
 
@@ -670,7 +670,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 </div>
 
                 <a
-                  href="mailto:fatalsoft.inc@gmail.com?subject=FizyoPanel%20Ayl%C4%B1k%20Abonelik%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Ayl%C4%B1k%20(250%20TL)%20paket%20ile%20ba%C5%9Flamak%20istiyoruz."
+                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Ayl%C4%B1k%20Abonelik%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Ayl%C4%B1k%20(250%20TL)%20paket%20ile%20ba%C5%9Flamak%20istiyoruz."
                   className="w-full h-12 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white font-bold text-[14px] flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
                 >
                   <span>14 Gün Ücretsiz Başla</span>
@@ -728,7 +728,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 </div>
 
                 <a
-                  href="mailto:fatalsoft.inc@gmail.com?subject=FizyoPanel%20Y%C4%B1ll%C4%B1k%20Kampanya%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Y%C4%B1ll%C4%B1k%20(2.000%20TL)%20Lansman%20Kampanyas%C4%B1ndan%20faydalanmak%20istiyoruz."
+                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Y%C4%B1ll%C4%B1k%20Kampanya%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Y%C4%B1ll%C4%B1k%20(2.000%20TL)%20Lansman%20Kampanyas%C4%B1ndan%20faydalanmak%20istiyoruz."
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-[14px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
                   <span>Kampanyadan Faydalan &amp; Başla</span>
@@ -752,7 +752,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             </span>
 
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-3">
-              Kliniğiniz İçin FizyoPanel'i Satın Almak İster misiniz?
+              Kliniğiniz İçin Fizyotim'i Satın Almak İster misiniz?
             </h2>
 
             <p className="text-[13px] sm:text-[15px] text-slate-300 max-w-2xl mx-auto mb-7 leading-relaxed font-normal">
@@ -761,7 +761,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
-                href="mailto:fatalsoft.inc@gmail.com?subject=FizyoPanel%20Klinik%20Yaz%C4%B1l%C4%B1m%C4%B1%20Sat%C4%B1n%20Alma%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20FizyoPanel%20hakk%C4%B1nda%20bilgi%20ve%20fiyat%20teklifi%20almak%20istiyoruz."
+                href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Klinik%20Yaz%C4%B1l%C4%B1m%C4%B1%20Sat%C4%B1n%20Alma%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Fizyotim%20hakk%C4%B1nda%20bilgi%20ve%20fiyat%20teklifi%20almak%20istiyoruz."
                 className="w-full sm:w-auto h-11 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all cursor-pointer"
               >
                 <Mail size={15} />
@@ -769,7 +769,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
               </a>
 
               <a
-                href="mailto:fatalsoft.inc@gmail.com?subject=FizyoPanel%20Demo%20Talebi"
+                href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Demo%20Talebi"
                 className="w-full sm:w-auto h-11 px-5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 text-[13px] font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>Fiyat &amp; Demo Teklifi Al</span>
@@ -785,7 +785,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
               <div className="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white shrink-0">
                 <Activity size={14} />
               </div>
-              <span className="text-[14px] font-bold text-white tracking-tight">FizyoPanel by FatalSoft</span>
+              <span className="text-[14px] font-bold text-white tracking-tight">Fizyotim by FatalSoft</span>
             </div>
 
             <div className="text-[12px] text-slate-400 flex flex-wrap items-center justify-center gap-4">
