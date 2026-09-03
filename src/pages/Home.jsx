@@ -327,24 +327,44 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
 
             {/* Trust Badges Bar (Tek Renk Kurumsal Kutular) */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mt-12 pt-8 border-t border-slate-200/80 text-left">
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <p className="text-[13px] font-bold text-slate-900">81 İl Desteği</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">Tüm il ve ilçelerde</p>
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <MapPin size={15} />
+                </div>
+                <div>
+                  <p className="text-[13px] font-bold text-slate-900">81 İl Desteği</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Tüm il ve ilçelerde</p>
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <p className="text-[13px] font-bold text-slate-900">Canlı Takvim</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">08:00 – 20:00 seanslar</p>
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <Calendar size={15} />
+                </div>
+                <div>
+                  <p className="text-[13px] font-bold text-slate-900">Canlı Takvim</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">08:00 – 20:00 seanslar</p>
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <p className="text-[13px] font-bold text-slate-900">Doğrulanmış Uzman</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">Diplomalı fizyoterapistler</p>
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <ShieldCheck size={15} />
+                </div>
+                <div>
+                  <p className="text-[13px] font-bold text-slate-900">Doğrulanmış Uzman</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Diplomalı fizyoterapistler</p>
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <p className="text-[13px] font-bold text-slate-900">Anında Bildirim</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">SMS &amp; WhatsApp onayı</p>
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <MessageSquare size={15} />
+                </div>
+                <div>
+                  <p className="text-[13px] font-bold text-slate-900">Anında Bildirim</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">SMS &amp; WhatsApp onayı</p>
+                </div>
               </div>
             </div>
           </div>
@@ -364,7 +384,12 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs">
-              <span className="text-[11px] font-mono font-bold text-slate-400 block mb-2">01</span>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-mono font-bold text-slate-400 block">01</span>
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
+                  <Search size={15} />
+                </div>
+              </div>
               <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">Şehir &amp; Klinik Seçin</h3>
               <p className="text-[12px] text-slate-500 leading-relaxed">
                 İl ve ilçenizdeki kayıtlı merkezleri inceleyin, size en uygun fizyoterapisti ve tedaviyi belirleyin.
@@ -372,7 +397,12 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             </div>
 
             <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs">
-              <span className="text-[11px] font-mono font-bold text-slate-400 block mb-2">02</span>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-mono font-bold text-slate-400 block">02</span>
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
+                  <Calendar size={15} />
+                </div>
+              </div>
               <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">Canlı Takvimden Saat Seçin</h3>
               <p className="text-[12px] text-slate-500 leading-relaxed">
                 Terapistin boş ve dolu saatlerini canlı takvimde görün. Size uygun olan seans saatine tıklayın.
@@ -380,7 +410,12 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             </div>
 
             <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs">
-              <span className="text-[11px] font-mono font-bold text-slate-400 block mb-2">03</span>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-mono font-bold text-slate-400 block">03</span>
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
+                  <CheckCircle2 size={15} />
+                </div>
+              </div>
               <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">WhatsApp ile Anında Onay</h3>
               <p className="text-[12px] text-slate-500 leading-relaxed">
                 Kayıtlı telefon numaranızla talebinizi gönderin. Randevunuz onaylandığı an bildirim cebinize gelsin.
@@ -414,6 +449,9 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                         {t.badge}
                       </span>
+                      <div className="w-7 h-7 rounded-lg bg-slate-50 text-slate-400 group-hover:text-teal-600 flex items-center justify-center transition-colors">
+                        <Activity size={13} />
+                      </div>
                     </div>
                     <h4 className="font-bold text-gray-900 text-[15px] group-hover:text-teal-700 transition-colors mb-1.5">
                       {t.title}
