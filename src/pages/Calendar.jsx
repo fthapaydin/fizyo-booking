@@ -215,6 +215,31 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
   );
 }
 
+function maskName(name) {
+  if (!name) return 'Değerli Hastamız';
+  return name.trim().split(/\s+/).map(part => {
+    if (part.length <= 2) return part[0] + '*';
+    return part.substring(0, 2) + '*'.repeat(Math.min(4, Math.max(2, part.length - 2)));
+  }).join(' ');
+}
+
+function maskTreatment(name) {
+  if (!name) return 'Fizyoterapi Seansı';
+  return name.trim().split(/\s+/).map(part => {
+    if (part.length <= 2) return part;
+    return part.substring(0, 2) + '*'.repeat(Math.min(3, Math.max(2, part.length - 2)));
+  }).join(' ');
+}
+
+function maskTherapist(name) {
+  if (!name) return '';
+  const parts = name.trim().split(/\s+/);
+  return parts.map(part => {
+    if (part.toLowerCase().startsWith('dr') || part.toLowerCase().startsWith('fzt')) return part;
+    return part[0] + '***';
+  }).join(' ');
+}
+
 function LookupModal({ clinic, onClose }) {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -293,7 +318,7 @@ function LookupModal({ clinic, onClose }) {
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center cursor-pointer">✕</button>
         </div>
 
-        <form onSubmit={handleSearch} className="space-y-3 mb-5">
+        <form onSubmit={handleSearch} className="space-y-3 mb-4">
           <label className="block text-[12px] font-semibold text-gray-600">Kayıtlı Telefon Numaranız</label>
           <div className="flex gap-2">
             <input
@@ -329,9 +354,20 @@ function LookupModal({ clinic, onClose }) {
               </div>
             ) : (
               <div>
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <span className="text-[13px] font-bold text-gray-800">Sayın {results.patient.full_name}</span>
-                  <span className="text-[11px] text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded-md">Kayıtlı Hasta</span>
+                {/* Masked patient greeting & privacy notice */}
+                <div className="p-3 rounded-2xl bg-teal-50/60 border border-teal-100 mb-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] font-bold text-gray-800">
+                      Sayın {maskName(results.patient.full_name)}
+                    </span>
+                    <span className="text-[10px] text-teal-700 font-bold bg-teal-100/80 px-2 py-0.5 rounded-md">
+                      Kayıtlı Hasta
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-teal-800/80 flex items-center gap-1">
+                    <span>🔒</span>
+                    <span>KVKK Güvenliği: Kişisel verileriniz ve tedavi detaylarınız maskelenmiştir.</span>
+                  </p>
                 </div>
 
                 <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -345,9 +381,11 @@ function LookupModal({ clinic, onClose }) {
                       const isRejected = item.status === 'reddedildi';
 
                       return (
-                        <div key={i} className="p-3 rounded-xl border border-gray-200/90 bg-white text-[12px] space-y-1 shadow-2xs">
+                        <div key={i} className="p-3 rounded-xl border border-gray-200/90 bg-white text-[12px] space-y-1.5 shadow-2xs">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-gray-900">{item.treatment?.name || 'Seans'}</span>
+                            <span className="font-bold text-gray-900">
+                              {maskTreatment(item.treatment?.name)}
+                            </span>
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                               isApproved ? 'bg-blue-50 text-blue-700' :
                               isPending ? 'bg-amber-50 text-amber-700' :
@@ -359,11 +397,12 @@ function LookupModal({ clinic, onClose }) {
                           </div>
                           <div className="text-[11px] text-gray-500 flex items-center justify-between">
                             <span>📅 {item.date} • ⏰ {item.time?.substring(0, 5)}</span>
-                            {item.therapist?.full_name && <span>Fzt. {item.therapist.full_name}</span>}
+                            {item.therapist?.full_name && <span>{maskTherapist(item.therapist.full_name)}</span>}
                           </div>
                           {item.rejection_reason && (
-                            <p className="text-[10px] text-red-600 bg-red-50 p-1.5 rounded-md mt-1">
-                              Gerekçe: {item.rejection_reason}
+                            <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200/80 p-1.5 rounded-md mt-1 flex items-center gap-1">
+                              <span>ℹ️</span>
+                              <span>Randevu durumu için lütfen kliniğimiz ile iletişime geçiniz.</span>
                             </p>
                           )}
                         </div>

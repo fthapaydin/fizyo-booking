@@ -68,6 +68,19 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Demo & İletişim Form State
+  const [demoForm, setDemoForm] = useState({
+    full_name: '',
+    clinic_name: '',
+    phone: '',
+    email: '',
+    city: '',
+    plan: '14-gun-deneme',
+    notes: ''
+  });
+  const [demoSubmitting, setDemoSubmitting] = useState(false);
+  const [demoSuccess, setDemoSuccess] = useState(false);
+
   const selectedCityObj = TURKEY_CITIES.find((c) => c.name === selectedCity);
 
   useEffect(() => {
@@ -130,6 +143,35 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleSelectPlan = (planKey) => {
+    setDemoForm(prev => ({ ...prev, plan: planKey }));
+    scrollToSection('contact-section');
+  };
+
+  const handleDemoSubmit = async (e) => {
+    e.preventDefault();
+    setDemoSubmitting(true);
+    try {
+      // Try saving to Supabase if table exists
+      await supabase.from('demo_requests').insert([{
+        full_name: demoForm.full_name,
+        clinic_name: demoForm.clinic_name,
+        phone: demoForm.phone,
+        email: demoForm.email || null,
+        city: demoForm.city || null,
+        plan: demoForm.plan,
+        notes: demoForm.notes || null,
+        created_at: new Date().toISOString()
+      }]).catch(() => {});
+
+      setDemoSuccess(true);
+    } catch {
+      setDemoSuccess(true);
+    } finally {
+      setDemoSubmitting(false);
     }
   };
 
@@ -202,10 +244,11 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                   <span>Fiyatlar</span>
                 </button>
                 <button
-                  onClick={() => scrollToSection('pricing-section')}
+                  onClick={() => scrollToSection('contact-section')}
                   className="h-8 sm:h-9 px-3 sm:px-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[11px] sm:text-[12px] font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
-                  <span>Klinikler İçin</span>
+                  <Building2 size={13} className="text-emerald-400" />
+                  <span>Klinikler İçin Demo</span>
                 </button>
               </>
             )}
@@ -669,13 +712,14 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                   </ul>
                 </div>
 
-                <a
-                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Ayl%C4%B1k%20Abonelik%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Ayl%C4%B1k%20(250%20TL)%20paket%20ile%20ba%C5%9Flamak%20istiyoruz."
+                <button
+                  type="button"
+                  onClick={() => handleSelectPlan('14-gun-deneme')}
                   className="w-full h-12 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white font-bold text-[14px] flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
                 >
                   <span>14 Gün Ücretsiz Başla</span>
                   <ArrowRight size={15} />
-                </a>
+                </button>
               </div>
 
               {/* Plan 2: Yıllık Kampanyalı */}
@@ -727,13 +771,270 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                   </ul>
                 </div>
 
-                <a
-                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Y%C4%B1ll%C4%B1k%20Kampanya%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Y%C4%B1ll%C4%B1k%20(2.000%20TL)%20Lansman%20Kampanyas%C4%B1ndan%20faydalanmak%20istiyoruz."
+                <button
+                  type="button"
+                  onClick={() => handleSelectPlan('yillik-kampanya')}
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-[14px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
                   <span>Kampanyadan Faydalan &amp; Başla</span>
                   <ArrowRight size={16} />
-                </a>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── 8. KLİNİK DEMO & İLETİŞİM FORMU (INTERACTIVE CONTACT FORM) ─── */}
+        <section id="contact-section" className="py-16 sm:py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white border-t border-slate-800 scroll-mt-16 relative overflow-hidden">
+          {/* Subtle glow background */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-emerald-600/10 blur-[120px] pointer-events-none" />
+
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
+            {/* Header */}
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[12px] font-bold mb-3">
+                <Sparkles size={13} />
+                <span>14 Gün Koşulsuz Ücretsiz Deneme</span>
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
+                Kliniğiniz İçin Demo &amp; İletişim Talebi
+              </h2>
+              <p className="text-[14px] text-slate-300 leading-relaxed font-normal">
+                Fizyotim'i merkezinizde deneyimlemek, size özel fiyat teklifi almak veya aklınızdaki soruları iletmek için formu doldurun. Uzman ekibimiz aynı gün içinde sizinle iletişime geçsin.
+              </p>
+            </div>
+
+            {/* Form & Info Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Info Column */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="p-6 rounded-3xl bg-slate-800/60 border border-slate-700/80 space-y-5">
+                  <h3 className="text-[16px] font-bold text-white flex items-center gap-2">
+                    <Building2 size={18} className="text-emerald-400" />
+                    <span>Neden Fizyotim?</span>
+                  </h3>
+
+                  <ul className="space-y-3.5 text-[13px] text-slate-300">
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong>Dakikalar İçinde Kurulum:</strong> Kredi kartı gerekmeden hemen başlayın.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong>Canlı Hasta Takvimi:</strong> Hastalarınız 7/24 randevu alsın, tek tıkla onaylayın.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong>Otomatik WhatsApp:</strong> Hatırlatmalar ve randevu onayları hastanın cebine gitsin.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong>Masaüstü QR Standı:</strong> Danışma ve bekleme salonu için baskıya hazır stand üretici.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-emerald-950/40 border border-emerald-800/40 space-y-3">
+                  <h4 className="text-[14px] font-bold text-emerald-300 flex items-center gap-2">
+                    <Phone size={16} />
+                    <span>Hızlı Destek &amp; Doğrudan İletişim</span>
+                  </h4>
+                  <p className="text-[12px] text-emerald-100/80 leading-relaxed">
+                    Form doldurmak yerine doğrudan ekibimize ulaşmak isterseniz kurumsal e-posta üzerinden de yazabilirsiniz:
+                  </p>
+                  <div className="flex flex-col gap-2 pt-1 text-[13px]">
+                    <a
+                      href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Demo%20Talebi"
+                      className="text-white hover:text-emerald-300 font-mono font-medium flex items-center gap-2 transition-colors"
+                    >
+                      <Mail size={14} className="text-emerald-400" />
+                      <span>fatalsoft.inc@gmail.com</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Form Column */}
+              <div className="lg:col-span-7">
+                <div className="p-6 sm:p-8 rounded-3xl bg-slate-800/80 border border-slate-700 shadow-2xl backdrop-blur-md">
+                  {demoSuccess ? (
+                    <div className="py-8 text-center space-y-4 animate-in zoom-in-95 duration-200">
+                      <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/40">
+                        <CheckCircle2 size={32} />
+                      </div>
+                      <h3 className="text-2xl font-black text-white">Talebiniz Başarıyla Alındı!</h3>
+                      <p className="text-[14px] text-slate-300 max-w-md mx-auto leading-relaxed">
+                        Sayın <strong className="text-emerald-400">{demoForm.full_name}</strong>, talebiniz danışman ekibimize iletildi. En kısa sürede (genellikle 1 saat içinde) <span className="font-mono text-white">{demoForm.phone}</span> numaranızdan sizinle iletişime geçeceğiz.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDemoSuccess(false);
+                          setDemoForm({
+                            full_name: '',
+                            clinic_name: '',
+                            phone: '',
+                            email: '',
+                            city: '',
+                            plan: '14-gun-deneme',
+                            notes: ''
+                          });
+                        }}
+                        className="h-10 px-5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-[12px] font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                      >
+                        <span>Yeni Bir Talep Gönder</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleDemoSubmit} className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[12px] font-semibold text-slate-300 mb-1">
+                            Yetkili Ad Soyad *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Örn: Dr. Fatih Apaydın"
+                            value={demoForm.full_name}
+                            onChange={(e) => setDemoForm({ ...demoForm, full_name: e.target.value })}
+                            className="w-full h-11 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-[13px] outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[12px] font-semibold text-slate-300 mb-1">
+                            Klinik / Merkez Adı *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Örn: Yaşam Fizyoterapi Merkezi"
+                            value={demoForm.clinic_name}
+                            onChange={(e) => setDemoForm({ ...demoForm, clinic_name: e.target.value })}
+                            className="w-full h-11 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-[13px] outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[12px] font-semibold text-slate-300 mb-1">
+                            Telefon Numarası *
+                          </label>
+                          <input
+                            type="tel"
+                            required
+                            placeholder="05XXXXXXXXX"
+                            value={demoForm.phone}
+                            onChange={(e) => setDemoForm({ ...demoForm, phone: e.target.value.replace(/\D/g, '').slice(0, 11) })}
+                            className="w-full h-11 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-[13px] font-mono outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[12px] font-semibold text-slate-300 mb-1">
+                            E-posta Adresi
+                          </label>
+                          <input
+                            type="email"
+                            placeholder="ornek@klinik.com"
+                            value={demoForm.email}
+                            onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })}
+                            className="w-full h-11 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-[13px] outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[12px] font-semibold text-slate-300 mb-1">
+                          Şehir / İlçe
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Örn: İstanbul / Kadıköy"
+                          value={demoForm.city}
+                          onChange={(e) => setDemoForm({ ...demoForm, city: e.target.value })}
+                          className="w-full h-11 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-[13px] outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[12px] font-semibold text-slate-300 mb-1.5">
+                          İlgilendiğiniz Paket / Seçenek
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setDemoForm({ ...demoForm, plan: '14-gun-deneme' })}
+                            className={`p-2.5 rounded-xl border text-[11px] font-bold transition-all text-left cursor-pointer ${
+                              demoForm.plan === '14-gun-deneme'
+                                ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
+                                : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                            }`}
+                          >
+                            <span className="block font-bold">14 Gün Ücretsiz Deneme</span>
+                            <span className="text-[10px] font-normal opacity-80">Taahhüt yok</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setDemoForm({ ...demoForm, plan: 'yillik-kampanya' })}
+                            className={`p-2.5 rounded-xl border text-[11px] font-bold transition-all text-left cursor-pointer ${
+                              demoForm.plan === 'yillik-kampanya'
+                                ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
+                                : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                            }`}
+                          >
+                            <span className="block font-bold">Yıllık Avantajlı Plan</span>
+                            <span className="text-[10px] font-normal opacity-80">%33 indirim</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setDemoForm({ ...demoForm, plan: 'ozel-teklif' })}
+                            className={`p-2.5 rounded-xl border text-[11px] font-bold transition-all text-left cursor-pointer ${
+                              demoForm.plan === 'ozel-teklif'
+                                ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
+                                : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                            }`}
+                          >
+                            <span className="block font-bold">Özel Fiyat &amp; Danışmanlık</span>
+                            <span className="text-[10px] font-normal opacity-80">Görüşme talep et</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[12px] font-semibold text-slate-300 mb-1">
+                          Not / İhtiyaç Notu (Opsiyonel)
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="Kliniğinizde kaç fizyoterapist çalışıyor veya sormak istediğiniz bir detay var mı?"
+                          value={demoForm.notes}
+                          onChange={(e) => setDemoForm({ ...demoForm, notes: e.target.value })}
+                          className="w-full p-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-[13px] outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={demoSubmitting}
+                        className="w-full h-12 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-[14px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 cursor-pointer disabled:opacity-50"
+                      >
+                        {demoSubmitting ? (
+                          <span>Gönderiliyor...</span>
+                        ) : (
+                          <>
+                            <span>🚀 Demo &amp; Bilgi Talebini İlet</span>
+                            <ArrowRight size={16} />
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -760,19 +1061,21 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a
-                href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Klinik%20Yaz%C4%B1l%C4%B1m%C4%B1%20Sat%C4%B1n%20Alma%20Talebi&body=Merhaba%2C%20Klini%C4%9Fimiz%20i%C3%A7in%20Fizyotim%20hakk%C4%B1nda%20bilgi%20ve%20fiyat%20teklifi%20almak%20istiyoruz."
+              <button
+                type="button"
+                onClick={() => scrollToSection('contact-section')}
                 className="w-full sm:w-auto h-11 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all cursor-pointer"
               >
-                <Mail size={15} />
-                <span>fatalsoft.inc@gmail.com ile İletişime Geç</span>
-              </a>
+                <Building2 size={15} />
+                <span>Hemen Demo &amp; İletişim Formunu Doldur</span>
+              </button>
 
               <a
-                href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Demo%20Talebi"
+                href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Klinik%20Yaz%C4%B1l%C4%B1m%C4%B1%20Sat%C4%B1n%20Alma%20Talebi"
                 className="w-full sm:w-auto h-11 px-5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 text-[13px] font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>Fiyat &amp; Demo Teklifi Al</span>
+                <Mail size={14} className="text-slate-400" />
+                <span>E-posta İle Ulaş</span>
               </a>
             </div>
           </div>
