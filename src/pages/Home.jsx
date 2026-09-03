@@ -5,7 +5,7 @@ import {
   Activity, Clock, CheckCircle, Star, Phone, MapPin, Search, Building2, Calendar, 
   ArrowRight, ShieldCheck, Stethoscope, Sparkles, QrCode, Mail, MessageSquare, 
   Award, CheckCircle2, ChevronRight, UserCheck, HeartHandshake, Layers, X, ExternalLink,
-  Zap, Tag, Gift, Filter, RotateCcw
+  Zap, Tag, Gift, Filter, RotateCcw, Crosshair, Dumbbell, HeartPulse
 } from 'lucide-react';
 
 const POPULAR_CITIES = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Kocaeli', 'Gaziantep'];
@@ -13,40 +13,68 @@ const POPULAR_CITIES = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Ad
 const TREATMENTS_SHOWCASE = [
   { 
     id: 'manuel-terapi', 
-    title: 'Manuel Terapi', 
-    desc: 'Omurga ve eklem blokajlarını elle açarak ağrısız, doğal hareket kabiliyeti kazandırır.', 
-    badge: 'En Çok Tercih Edilen', 
+    title: 'Manuel Terapi & Eklem Mobilizasyonu', 
+    desc: 'Omurga ve periferik eklem blokajlarını, faset kilitlenmelerini özel el teknikleriyle açarak doğal hareket açısını ağrısız geri kazandırır.', 
+    badge: 'Klinik Mobilizasyon',
+    icon: 'Activity',
+    tags: ['Faset Blokajı', 'Eklem Mobilizasyonu', 'Ağrısız Hareket']
   },
   { 
     id: 'bel-boyun', 
-    title: 'Bel & Boyun Fıtığı', 
-    desc: 'Ameliyatsız kişiye özel klinik dekompresyon, çekme ve derin omurga egzersiz terapisi.', 
-    badge: 'Uzmanlık', 
+    title: 'Bel & Boyun Fıtığı (Spinal Dekompresyon)', 
+    desc: 'Lomber ve servikal disk hernilerinde ameliyatsız klinik traksiyon, derin omurga stabilizasyonu ve sinir kökü basısını hafifleten dekompresyon.', 
+    badge: 'Ameliyatsız Protokol', 
+    icon: 'Layers',
+    tags: ['Disk Hernisi (Fıtık)', 'Siyatik Sinir', 'Kanal Daralması']
   },
   { 
-    id: 'skolyoz-postur', 
-    title: 'Skolyoz & Postür', 
-    desc: '3 boyutlu omurga analizi, Schroth metodu ve duruş bozuklukları için özel düzeltme protokolü.', 
-    badge: 'Klinik Protokol', 
-  },
-  { 
-    id: 'sporcu-sagligi', 
-    title: 'Sporcu Rehabilitasyonu', 
-    desc: 'Menisküs, ön çapraz bağ ve kas yırtılmaları sonrası sahaya güçlü ve hızlı dönüş programı.', 
-    badge: 'Rehabilitasyon', 
+    id: 'skolyoz-schroth', 
+    title: '3D Schroth Skolyoz & Postür Terapisi', 
+    desc: '3 boyutlu omurga analizi, rotasyonel açısal solunum ve asimetrik gövde kaslarını dengeleyen uluslararası altın standart Schroth yöntemi.', 
+    badge: 'Uluslararası Schroth', 
+    icon: 'Sparkles',
+    tags: ['Adölesan Skolyoz', 'Kifoz (Kamburluk)', 'Postür Düzeltme']
   },
   { 
     id: 'kuru-igneleme', 
-    title: 'Kuru İğneleme & Kupa', 
-    desc: 'Kronik kas spazmlarını, tetik noktaları ve kulunçları tek seansta rahatlatan medikal uygulama.', 
-    badge: 'Hızlı Rahatlama', 
+    title: 'Kuru İğneleme (IMS) & Tetik Nokta', 
+    desc: 'Kronik kas spazmlarını, inatçı kulunçları ve miyofasiyal ağrı tetik odaklarını ince steril iğnelerle derin kas katmanında çözen medikal terapi.', 
+    badge: 'Hedefe Yönelik Tedavi', 
+    icon: 'Crosshair',
+    tags: ['Miyofasiyal Tetik Nokta', 'Kronik Kulunç', 'Fibromiyalji']
+  },
+  { 
+    id: 'sporcu-sagligi', 
+    title: 'Ortopedik & Sporcu Rehabilitasyonu', 
+    desc: 'Ön çapraz bağ (ACL), menisküs ve omuz rotator cuff cerrahileri sonrası izokinetik kuvvetlendirme ve spora güvenli dönüş (Return to Play) testleri.', 
+    badge: 'Sahaya Dönüş', 
+    icon: 'HeartPulse',
+    tags: ['Ön Çapraz Bağ (ACL)', 'Menisküs', 'Rotator Cuff']
   },
   { 
     id: 'klinik-pilates', 
-    title: 'Klinik Pilates', 
-    desc: 'Fizyoterapist eşliğinde omurga sağlığını koruyan, derin kor kaslarını güçlendiren reformer seansları.', 
-    badge: 'Birebir Seans', 
+    title: 'Klinik Reformer Pilates', 
+    desc: 'Fizyoterapist gözetiminde omurga biyomekaniğini koruyan, derin transversus abdominis ve pelvik taban kaslarını güçlendiren medikal reformer.', 
+    badge: 'Birebir Fizyoterapist', 
+    icon: 'Dumbbell',
+    tags: ['Core Güçlendirme', 'Boyun Düzleşmesi', 'Hiperlordoz']
   },
+  { 
+    id: 'cene-eklemi', 
+    title: 'Çene Eklemi (TME) Terapisi', 
+    desc: 'Diş sıkma (bruksizm), çeneden gelen klik/kütleme sesleri, çiğneme kası spazmları ve çene kaynaklı baş-şakak ağrılarının miyofasiyal tedavisi.', 
+    badge: 'TME Uzmanlığı', 
+    icon: 'ShieldCheck',
+    tags: ['Bruksizm (Diş Sıkma)', 'Klik Sesi', 'Çene Kilitlenmesi']
+  },
+  { 
+    id: 'graston-kupa', 
+    title: 'Graston (IASTM) & Medikal Kupa', 
+    desc: 'Medikal çelik enstrümanlarla fasyal yapışıklıkların çözülmesi, mikrodolaşımın hızlandırılması ve sertleşmiş skar dokuların gevşetilmesi protokolü.', 
+    badge: 'Fasiyal Mobilizasyon', 
+    icon: 'Stethoscope',
+    tags: ['Fasyal Adezyon', 'Doku Oksijenasyonu', 'Hızlı İyileşme']
+  }
 ];
 
 export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
@@ -174,7 +202,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
           
           {/* Logo & Brand */}
           <div className="flex items-center gap-2.5 shrink-0 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            {clinic?.logo_url ? (
+            {isSpecificClinicMode && clinic?.logo_url ? (
               <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs border border-gray-100" />
             ) : (
               <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center shadow-xs text-white shrink-0 font-black text-[13px] tracking-tight">
@@ -186,7 +214,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 {isSpecificClinicMode ? clinic.name : 'Fizyotim'}
               </span>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block leading-tight">
-                {isSpecificClinicMode ? 'KLİNİK RANDEVU SİSTEMİ' : 'ONLINE RANDEVU SİSTEMİ'}
+                {isSpecificClinicMode ? 'KLİNİK RANDEVU SİSTEMİ' : 'FİZYOTERAPİ & ONLİNE RANDEVU SİSTEMİ'}
               </span>
             </div>
           </div>
@@ -423,45 +451,69 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
 
         {/* ─── 4. TREATMENTS SHOWCASE (CLICKABLE TO SEARCH) ──────── */}
         <section id="treatments-section" className="bg-slate-50/80 border-y border-gray-200/80 pt-16 pb-16 sm:pt-20 sm:pb-20 scroll-mt-28">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <div className="text-center max-w-xl mx-auto mb-12">
-              <span className="text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200/80 px-3 py-1 rounded-full uppercase tracking-wider">
-                Tedavi &amp; Hizmetler
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="text-[11px] font-bold text-slate-800 bg-white border border-slate-200/90 shadow-2xs px-3.5 py-1 rounded-full uppercase tracking-wider">
+                Klinik Uzmanlık Alanları
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-2.5 mb-2 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mt-3 mb-2.5 tracking-tight">
                 Kliniklerimizde Sunulan Uzmanlıklar
               </h2>
-              <p className="text-[13px] text-gray-400">Tedaviye tıklayarak o alanda uzman klinikleri anında listeleyebilirsiniz.</p>
+              <p className="text-[13px] sm:text-[14px] text-gray-500 leading-relaxed">
+                Her rahatsızlık için kanıta dayalı fizyoterapi ve manuel terapi protokolleri uygulanır. İlgilendiğiniz uzmanlığa tıklayarak bu alandaki klinikleri anında filtreleyebilirsiniz.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {TREATMENTS_SHOWCASE.map((t) => (
-                <div 
-                  key={t.id} 
-                  onClick={() => handleTreatmentClick(t.title)}
-                  className="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-2xs hover:border-teal-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                        {t.badge}
-                      </span>
-                      <div className="w-7 h-7 rounded-lg bg-slate-50 text-slate-400 group-hover:text-teal-600 flex items-center justify-center transition-colors">
-                        <Activity size={13} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {TREATMENTS_SHOWCASE.map((t) => {
+                const IconComponent = 
+                  t.icon === 'Layers' ? Layers :
+                  t.icon === 'Sparkles' ? Sparkles :
+                  t.icon === 'Crosshair' ? Crosshair :
+                  t.icon === 'HeartPulse' ? HeartPulse :
+                  t.icon === 'Dumbbell' ? Dumbbell :
+                  t.icon === 'ShieldCheck' ? ShieldCheck :
+                  t.icon === 'Stethoscope' ? Stethoscope : Activity;
+
+                return (
+                  <div 
+                    key={t.id} 
+                    onClick={() => handleTreatmentClick(t.title)}
+                    className="bg-white rounded-2xl border border-gray-200/90 p-5 shadow-2xs hover:border-slate-800 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-3.5">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 tracking-tight">
+                          {t.badge}
+                        </span>
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition-colors shadow-2xs">
+                          <IconComponent size={15} />
+                        </div>
+                      </div>
+                      <h4 className="font-bold text-gray-900 text-[14px] group-hover:text-slate-900 transition-colors mb-2 leading-snug">
+                        {t.title}
+                      </h4>
+                      <p className="text-[12px] text-gray-500 leading-relaxed mb-3.5">
+                        {t.desc}
+                      </p>
+                      
+                      {/* Clinical Indication Tags */}
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {t.tags?.map((tag, idx) => (
+                          <span key={idx} className="text-[10px] font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
+                            {tag}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <h4 className="font-bold text-gray-900 text-[15px] group-hover:text-teal-700 transition-colors mb-1.5">
-                      {t.title}
-                    </h4>
-                    <p className="text-[12px] text-gray-500 leading-relaxed">{t.desc}</p>
-                  </div>
 
-                  <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-bold text-teal-600">
-                    <span>Klinikleri Listele</span>
-                    <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">
+                      <span>Uzman Klinikleri Listele</span>
+                      <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
