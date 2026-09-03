@@ -184,10 +184,8 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
 
         {/* Header */}
         <div className="mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-[12px] font-semibold mb-2">
-            <span>📅 {formattedDate}</span>
-            <span>•</span>
-            <span>⏰ {slot.time}</span>
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[12px] font-medium mb-2">
+            <span>{formattedDate} • {slot.time}</span>
           </div>
           <h2 className="text-xl font-bold text-gray-900">Randevu Talebi Oluştur</h2>
           <p className="text-[13px] text-gray-500 mt-1">
@@ -222,9 +220,8 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                 className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all font-mono"
               />
             </div>
-            <p className="text-[11px] text-teal-700 bg-teal-50/70 p-2 rounded-lg mt-1.5 flex items-center gap-1.5">
-              <span>🔒</span>
-              <span>Sistemimiz numaranızdan hasta kaydınızı otomatik olarak tanıyacaktır.</span>
+            <p className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200/60 p-2 rounded-lg mt-1.5">
+              Sistemimiz numaranızdan hasta kaydınızı otomatik olarak tanıyacaktır.
             </p>
           </div>
 

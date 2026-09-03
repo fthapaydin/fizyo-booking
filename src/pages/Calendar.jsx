@@ -311,11 +311,10 @@ function LookupModal({ clinic, onClose }) {
       <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
       <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 z-10 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🔍</span>
-            <h3 className="text-lg font-bold text-gray-900">Randevu Durumu Sorgula</h3>
+          <div>
+            <h3 className="text-base font-bold text-gray-900">Randevu Durumu Sorgula</h3>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center cursor-pointer">✕</button>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center cursor-pointer text-xs font-semibold">✕</button>
         </div>
 
         <form onSubmit={handleSearch} className="space-y-3 mb-4">
@@ -332,7 +331,7 @@ function LookupModal({ clinic, onClose }) {
             <button
               type="submit"
               disabled={loading}
-              className="h-11 px-5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-[13px] font-bold shadow-md shadow-teal-200 transition-all cursor-pointer disabled:opacity-50"
+              className="h-11 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[13px] font-semibold transition-colors cursor-pointer disabled:opacity-50"
             >
               {loading ? '...' : 'Sorgula'}
             </button>
@@ -340,8 +339,7 @@ function LookupModal({ clinic, onClose }) {
         </form>
 
         {searchError && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-[12px] text-rose-700 mb-4 flex items-center gap-2">
-            <span>⚠️</span>
+          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-[12px] text-rose-700 mb-4">
             <span>{searchError}</span>
           </div>
         )}
@@ -355,18 +353,17 @@ function LookupModal({ clinic, onClose }) {
             ) : (
               <div>
                 {/* Masked patient greeting & privacy notice */}
-                <div className="p-3 rounded-2xl bg-teal-50/60 border border-teal-100 mb-3 space-y-1.5">
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 mb-3 space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-bold text-gray-800">
                       Sayın {maskName(results.patient.full_name)}
                     </span>
-                    <span className="text-[10px] text-teal-700 font-bold bg-teal-100/80 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] text-slate-600 font-semibold bg-slate-200/70 px-2 py-0.5 rounded">
                       Kayıtlı Hasta
                     </span>
                   </div>
-                  <p className="text-[10px] text-teal-800/80 flex items-center gap-1">
-                    <span>🔒</span>
-                    <span>KVKK Güvenliği: Kişisel verileriniz ve tedavi detaylarınız maskelenmiştir.</span>
+                  <p className="text-[10px] text-slate-500">
+                    KVKK Güvenliği: Kişisel verileriniz ve tedavi detaylarınız maskelenmiştir.
                   </p>
                 </div>
 

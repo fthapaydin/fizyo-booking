@@ -16,48 +16,36 @@ const TREATMENTS_SHOWCASE = [
     title: 'Manuel Terapi', 
     desc: 'Omurga ve eklem blokajlarını elle açarak ağrısız, doğal hareket kabiliyeti kazandırır.', 
     badge: 'En Çok Tercih Edilen', 
-    icon: '💆‍♂️',
-    color: 'from-teal-500/10 to-emerald-500/10 border-teal-200'
   },
   { 
     id: 'bel-boyun', 
     title: 'Bel & Boyun Fıtığı', 
     desc: 'Ameliyatsız kişiye özel klinik dekompresyon, çekme ve derin omurga egzersiz terapisi.', 
     badge: 'Uzmanlık', 
-    icon: '🦴',
-    color: 'from-blue-500/10 to-indigo-500/10 border-blue-200'
   },
   { 
     id: 'skolyoz-postur', 
     title: 'Skolyoz & Postür', 
     desc: '3 boyutlu omurga analizi, Schroth metodu ve duruş bozuklukları için özel düzeltme protokolü.', 
     badge: 'Klinik Protokol', 
-    icon: '📐',
-    color: 'from-purple-500/10 to-indigo-500/10 border-purple-200'
   },
   { 
     id: 'sporcu-sagligi', 
     title: 'Sporcu Rehabilitasyonu', 
     desc: 'Menisküs, ön çapraz bağ ve kas yırtılmaları sonrası sahaya güçlü ve hızlı dönüş programı.', 
     badge: 'Rehabilitasyon', 
-    icon: '🏃‍♂️',
-    color: 'from-amber-500/10 to-orange-500/10 border-amber-200'
   },
   { 
     id: 'kuru-igneleme', 
     title: 'Kuru İğneleme & Kupa', 
     desc: 'Kronik kas spazmlarını, tetik noktaları ve kulunçları tek seansta rahatlatan medikal uygulama.', 
     badge: 'Hızlı Rahatlama', 
-    icon: '🪡',
-    color: 'from-rose-500/10 to-pink-500/10 border-rose-200'
   },
   { 
     id: 'klinik-pilates', 
     title: 'Klinik Pilates', 
     desc: 'Fizyoterapist eşliğinde omurga sağlığını koruyan, derin kor kaslarını güçlendiren reformer seansları.', 
     badge: 'Birebir Seans', 
-    icon: '🧘‍♀️',
-    color: 'from-emerald-500/10 to-teal-500/10 border-emerald-200'
   },
 ];
 
@@ -455,10 +443,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-2xl p-2 rounded-xl bg-slate-50 group-hover:scale-110 transition-transform">
-                        {t.icon}
-                      </span>
-                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                         {t.badge}
                       </span>
                     </div>
