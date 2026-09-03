@@ -262,9 +262,10 @@ function LookupModal({ clinic, onClose }) {
     setSearched(true);
     try {
       // 1. Hasta bul (son 10 haneye göre esnek eşleşme)
+      // 1. Hasta bul (son 10 haneye göre esnek eşleşme)
       const { data: patient, error: pErr } = await supabase
         .from('patients')
-        .select('id, full_name, phone')
+        .select('id, full_name, phone, total_sessions')
         .ilike('phone', `%${last10}%`)
         .limit(1)
         .maybeSingle();
@@ -272,7 +273,7 @@ function LookupModal({ clinic, onClose }) {
       if (pErr) throw pErr;
 
       if (!patient) {
-        setResults({ patient: null, items: [] });
+        setResults({ patient: null, items: [], stats: null });
         return;
       }
 
@@ -282,22 +283,39 @@ function LookupModal({ clinic, onClose }) {
           .from('sessions')
           .select('id, session_date, session_time, status, treatment:treatments(name), therapist:staff(full_name)')
           .eq('patient_id', patient.id)
-          .order('session_date', { ascending: false })
-          .limit(10),
+          .order('session_date', { ascending: false }),
         supabase
           .from('session_requests')
           .select('id, requested_date, requested_time, status, rejection_reason, treatment:treatments(name), therapist:staff(full_name)')
           .eq('patient_id', patient.id)
           .order('created_at', { ascending: false })
-          .limit(10)
       ]);
 
+      const allSessions = sRes.data || [];
+      const allRequests = rRes.data || [];
+
+      // Seans istatistikleri hesaplama
+      const totalPlanned = Number(patient.total_sessions) > 0 ? Number(patient.total_sessions) : 10;
+      const completedSessions = allSessions.filter(s => s.status === 'tamamlandi').length;
+      const pendingSessions = allSessions.filter(s => s.status === 'bekliyor').length + 
+                              allRequests.filter(r => r.status === 'bekliyor').length;
+      const remainingSessions = Math.max(0, totalPlanned - completedSessions);
+
       const items = [
-        ...(sRes.data || []).map(s => ({ ...s, date: s.session_date, time: s.session_time, type: 'session' })),
-        ...(rRes.data || []).map(r => ({ ...r, date: r.requested_date, time: r.requested_time, type: 'request' }))
+        ...allSessions.map(s => ({ ...s, date: s.session_date, time: s.session_time, type: 'session' })),
+        ...allRequests.map(r => ({ ...r, date: r.requested_date, time: r.requested_time, type: 'request' }))
       ].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
-      setResults({ patient, items });
+      setResults({ 
+        patient, 
+        items,
+        stats: {
+          total: totalPlanned,
+          completed: completedSessions,
+          remaining: remainingSessions,
+          pending: pendingSessions
+        }
+      });
     } catch (err) {
       console.error('Sorgulama hatası:', err);
       setSearchError('Sorgulama yapılırken bağlantı hatası oluştu. Lütfen tekrar deneyiniz.');
@@ -326,7 +344,7 @@ function LookupModal({ clinic, onClose }) {
               placeholder="05XXXXXXXXX"
               value={phone}
               onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-              className="flex-1 h-11 px-3.5 rounded-xl border border-gray-200 text-[13px] font-mono outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              className="flex-1 h-11 px-3.5 rounded-xl border border-gray-200 text-[13px] font-mono outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800"
             />
             <button
               type="submit"
@@ -355,10 +373,10 @@ function LookupModal({ clinic, onClose }) {
                 {/* Masked patient greeting & privacy notice */}
                 <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 mb-3 space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-bold text-gray-800">
+                    <span className="text-[13px] font-bold text-gray-900">
                       Sayın {maskName(results.patient.full_name)}
                     </span>
-                    <span className="text-[10px] text-slate-600 font-semibold bg-slate-200/70 px-2 py-0.5 rounded">
+                    <span className="text-[10px] text-slate-700 font-semibold bg-slate-200/80 px-2 py-0.5 rounded">
                       Kayıtlı Hasta
                     </span>
                   </div>
@@ -367,7 +385,73 @@ function LookupModal({ clinic, onClose }) {
                   </p>
                 </div>
 
-                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                {/* Seans İstatistikleri (Toplam / Kalan / Bekleyen / Tamamlanan) */}
+                {results.stats && (
+                  <div className="mb-3 space-y-2">
+                    <div className="grid grid-cols-4 gap-1.5 text-center">
+                      {/* Toplam Seans */}
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Toplam</span>
+                        <span className="text-base font-black text-slate-900 font-mono block leading-tight mt-0.5">
+                          {results.stats.total}
+                        </span>
+                        <span className="text-[9px] text-slate-500 block">Paket Seans</span>
+                      </div>
+
+                      {/* Tamamlanan */}
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Tamamlanan</span>
+                        <span className="text-base font-black text-slate-900 font-mono block leading-tight mt-0.5">
+                          {results.stats.completed}
+                        </span>
+                        <span className="text-[9px] text-slate-500 block">Gerçekleşen</span>
+                      </div>
+
+                      {/* Kalan Seans */}
+                      <div className="p-2.5 rounded-xl bg-slate-900 text-white border border-slate-900 shadow-2xs">
+                        <span className="text-[10px] uppercase font-bold text-slate-300 block tracking-wider">Kalan</span>
+                        <span className="text-base font-black text-white font-mono block leading-tight mt-0.5">
+                          {results.stats.remaining}
+                        </span>
+                        <span className="text-[9px] text-slate-300 block font-medium">Kullanılabilir</span>
+                      </div>
+
+                      {/* Bekleyen Seans */}
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Bekleyen</span>
+                        <span className="text-base font-black text-slate-900 font-mono block leading-tight mt-0.5">
+                          {results.stats.pending}
+                        </span>
+                        <span className="text-[9px] text-slate-500 block">Planlanan</span>
+                      </div>
+                    </div>
+
+                    {/* Tamamlanma Oranı */}
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-[11px] text-slate-600">
+                      <span className="font-medium text-slate-700">Seans Tamamlanma Durumu:</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-slate-900 rounded-full transition-all duration-500"
+                            style={{ width: `${Math.min(100, Math.round((results.stats.completed / (results.stats.total || 1)) * 100))}%` }}
+                          />
+                        </div>
+                        <span className="font-mono font-bold text-slate-900 text-[11px]">
+                          %{Math.min(100, Math.round((results.stats.completed / (results.stats.total || 1)) * 100))}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Randevu Listesi */}
+                <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-100">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Randevu Geçmişi &amp; Talepler ({results.items.length})
+                  </span>
+                </div>
+
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                   {results.items.length === 0 ? (
                     <p className="text-[12px] text-gray-400 text-center py-4">Henüz bir randevu kaydınız bulunmuyor.</p>
                   ) : (
@@ -383,23 +467,22 @@ function LookupModal({ clinic, onClose }) {
                             <span className="font-bold text-gray-900">
                               {maskTreatment(item.treatment?.name)}
                             </span>
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                              isApproved ? 'bg-blue-50 text-blue-700' :
-                              isPending ? 'bg-amber-50 text-amber-700' :
-                              isDone ? 'bg-emerald-50 text-emerald-700' :
-                              'bg-rose-50 text-rose-700'
+                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                              isApproved ? 'bg-slate-100 text-slate-800' :
+                              isPending ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                              isDone ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                              'bg-rose-50 text-rose-800 border border-rose-200'
                             }`}>
-                              {isApproved ? '● Onaylandı' : isPending ? '⏳ Onay Bekliyor' : isDone ? '✓ Tamamlandı' : '✕ Reddedildi'}
+                              {isApproved ? '● Onaylandı' : isPending ? '● Onay Bekliyor' : isDone ? '✓ Tamamlandı' : '✕ Reddedildi'}
                             </span>
                           </div>
                           <div className="text-[11px] text-gray-500 flex items-center justify-between">
-                            <span>📅 {item.date} • ⏰ {item.time?.substring(0, 5)}</span>
-                            {item.therapist?.full_name && <span>{maskTherapist(item.therapist.full_name)}</span>}
+                            <span className="font-mono text-slate-700">{item.date} · {item.time?.substring(0, 5)}</span>
+                            {item.therapist?.full_name && <span className="text-slate-600 font-medium">{maskTherapist(item.therapist.full_name)}</span>}
                           </div>
                           {item.rejection_reason && (
-                            <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200/80 p-1.5 rounded-md mt-1 flex items-center gap-1">
-                              <span>ℹ️</span>
-                              <span>Randevu durumu için lütfen kliniğimiz ile iletişime geçiniz.</span>
+                            <p className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded-lg mt-1">
+                              Randevu durumu için lütfen kliniğimiz ile iletişime geçiniz.
                             </p>
                           )}
                         </div>
