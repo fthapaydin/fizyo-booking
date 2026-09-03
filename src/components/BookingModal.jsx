@@ -66,7 +66,75 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
         return;
       }
 
-      // 2. Randevu talebi oluştur
+      // 2. Geçmiş tarih ve saat kontrolü
+      const slotDateTime = new Date(`${slot.date}T${slot.time}`);
+      if (slotDateTime <= new Date()) {
+        setError('Geçmiş bir tarih veya saat için randevu talebi oluşturulamaz.');
+        setSubmitting(false);
+        return;
+      }
+
+      // 3. Hastanın bekleyen taleplerini kontrol et
+      const { data: existingRequests, error: reqSearchErr } = await supabase
+        .from('session_requests')
+        .select('id, requested_date, requested_time, status')
+        .eq('patient_id', existingPatient.id)
+        .eq('status', 'bekliyor');
+
+      if (reqSearchErr) throw reqSearchErr;
+
+      // 3a. Kontrol: En fazla 2 bekleyen talep olabilir
+      if (existingRequests && existingRequests.length >= 2) {
+        setError('Onay bekleyen 2 adet randevu talebiniz bulunmaktadır. Kliniğimiz mevcut taleplerinizi değerlendirmeden yeni bir talep oluşturamazsınız. Lütfen kliniğimizin onayını bekleyiniz.');
+        setSubmitting(false);
+        return;
+      }
+
+      // 3b. Kontrol: Aynı gün ve saate mükerrer talep açılamaz
+      const slotConflict = existingRequests?.some(
+        r => r.requested_date === slot.date && r.requested_time?.substring(0, 5) === slot.time?.substring(0, 5)
+      );
+      if (slotConflict) {
+        setError(`Bu tarih ve saat (${slot.date} ${slot.time}) için zaten onay bekleyen bir randevu talebiniz bulunmaktadır.`);
+        setSubmitting(false);
+        return;
+      }
+
+      // 4. Kontrol: Haftalık en fazla 2 seans / talep limiti
+      const targetDate = new Date(slot.date);
+      const day = targetDate.getDay() || 7; // Pazartesi = 1, Pazar = 7
+      const monday = new Date(targetDate);
+      monday.setDate(targetDate.getDate() - day + 1);
+      const mondayStr = monday.toISOString().split('T')[0];
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      const sundayStr = sunday.toISOString().split('T')[0];
+
+      const [weekReqRes, weekSesRes] = await Promise.all([
+        supabase
+          .from('session_requests')
+          .select('id, requested_date')
+          .eq('patient_id', existingPatient.id)
+          .neq('status', 'reddedildi')
+          .gte('requested_date', mondayStr)
+          .lte('requested_date', sundayStr),
+        supabase
+          .from('sessions')
+          .select('id, session_date')
+          .eq('patient_id', existingPatient.id)
+          .neq('status', 'iptal')
+          .gte('session_date', mondayStr)
+          .lte('session_date', sundayStr)
+      ]);
+
+      const weeklyTotal = (weekReqRes.data?.length || 0) + (weekSesRes.data?.length || 0);
+      if (weeklyTotal >= 2) {
+        setError('Klinik randevu politikamız gereği bir hasta aynı hafta içerisinde en fazla 2 randevu veya talep oluşturabilir. Seçtiğiniz hafta için randevu kotanıza ulaştınız.');
+        setSubmitting(false);
+        return;
+      }
+
+      // 5. Randevu talebi oluştur
       const { error: reqErr } = await supabase
         .from('session_requests')
         .insert([{
