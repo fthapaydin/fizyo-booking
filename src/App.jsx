@@ -7,15 +7,21 @@ import { Loader2 } from 'lucide-react';
 import './index.css';
 
 export default function App() {
-  const [page, setPage] = useState('home'); // 'home' | 'calendar' | 'success'
+  const [page, setPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('page') === 'home' || params.get('view') === 'home') {
+      return 'home';
+    }
+    return 'calendar';
+  });
   const [bookingInfo, setBookingInfo] = useState(null);
   const [clinic, setClinic] = useState(null);
   const [loadingClinic, setLoadingClinic] = useState(true);
 
   useEffect(() => {
-    // URL'den clinic parametresini al (?clinic=slug)
     const params = new URLSearchParams(window.location.search);
-    const clinicSlug = params.get('clinic');
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+    const clinicSlug = params.get('clinic') || (path && !['home', 'index.html', 'calendar'].includes(path) ? path : null);
 
     const fetchInitialClinic = async () => {
       setLoadingClinic(true);
@@ -34,7 +40,7 @@ export default function App() {
           }
         }
 
-        // Eğer doğrudan slug yoksa varsayılan ilk kliniği al
+        // Eğer doğrudan slug yoksa varsayılan ilk aktif kliniği al
         const { data: defaultClinic } = await supabase
           .from('clinics')
           .select('*')
@@ -75,7 +81,7 @@ export default function App() {
 
   const handleBack = () => {
     setBookingInfo(null);
-    setPage('home');
+    setPage('calendar');
   };
 
   if (loadingClinic) {
