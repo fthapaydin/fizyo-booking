@@ -80,16 +80,16 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
             </button>
             <div className="flex items-center gap-2.5">
               {clinic?.logo_url ? (
-                <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-sm" />
+                <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs border border-gray-100" />
               ) : (
-                <div
-                  className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg text-white"
-                  style={{ backgroundColor: themeColor }}
-                >
-                  <Activity size={15} strokeWidth={2.5} />
+                <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center shadow-xs text-white shrink-0 font-black text-[13px] tracking-tight">
+                  FT
                 </div>
               )}
-              <span className="text-[15px] font-bold text-gray-900">{clinicName}</span>
+              <div>
+                <span className="text-[14px] font-bold text-gray-900 block leading-tight">{clinicName}</span>
+                <span className="text-[9px] text-slate-500 font-semibold uppercase tracking-wider block leading-tight">ONLINE RANDEVU SİSTEMİ</span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -441,6 +441,12 @@ function LookupModal({ clinic, onClose }) {
                         </span>
                       </div>
                     </div>
+
+                    {results.stats.remaining === 0 && (
+                      <div className="p-2.5 rounded-xl bg-slate-900 text-white text-[11px] text-center font-medium shadow-2xs">
+                        Bu döneme ait seans paketiniz tamamlanmıştır. Yeni seans paketi tanımlatmak için lütfen kliniğimiz ile iletişime geçiniz.
+                      </div>
+                    )}
                   </div>
                 )}
 

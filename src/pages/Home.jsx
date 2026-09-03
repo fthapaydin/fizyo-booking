@@ -175,21 +175,18 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
           {/* Logo & Brand */}
           <div className="flex items-center gap-2.5 shrink-0 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             {clinic?.logo_url ? (
-              <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs" />
+              <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs border border-gray-100" />
             ) : (
-              <div
-                className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm text-white shrink-0"
-                style={{ backgroundColor: clinic?.theme_color || '#059669' }}
-              >
-                <Activity size={17} strokeWidth={2.5} />
+              <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center shadow-xs text-white shrink-0 font-black text-[13px] tracking-tight">
+                FT
               </div>
             )}
             <div>
-              <span className="text-[15px] font-black text-gray-900 tracking-tight block leading-tight">
+              <span className="text-[15px] font-black text-slate-900 tracking-tight block leading-tight">
                 {isSpecificClinicMode ? clinic.name : 'Fizyotim'}
               </span>
-              <span className="text-[10px] text-teal-600 font-bold uppercase tracking-wider block leading-tight">
-                {isSpecificClinicMode ? 'Online Randevu' : 'Fizyoterapi & Sağlık'}
+              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block leading-tight">
+                {isSpecificClinicMode ? 'KLİNİK RANDEVU SİSTEMİ' : 'ONLINE RANDEVU SİSTEMİ'}
               </span>
             </div>
           </div>
@@ -1063,8 +1060,8 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white shrink-0">
-                <Activity size={14} />
+              <div className="w-7 h-7 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center text-white shrink-0 font-black text-[11px] tracking-tight">
+                FT
               </div>
               <span className="text-[14px] font-bold text-white tracking-tight">Fizyotim by FatalSoft</span>
             </div>
