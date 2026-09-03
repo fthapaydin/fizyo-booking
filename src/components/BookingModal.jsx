@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { X, User, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle, UserCheck } from 'lucide-react';
+import { X, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle, UserCheck } from 'lucide-react';
 
 export default function BookingModal({ clinic, slot, treatments, staff = [], defaultTherapistId = '', onClose, onSuccess }) {
   const [form, setForm] = useState({
-    full_name: '',
     phone: '',
     treatment_id: treatments[0]?.id || '',
     therapist_id: defaultTherapistId || '',
@@ -24,12 +23,6 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    const trimmedName = form.full_name.trim();
-    if (!trimmedName || trimmedName.length < 3) {
-      setError('Lütfen geçerli bir Ad Soyad giriniz.');
-      return;
-    }
 
     const cleaned = form.phone.replace(/\D/g, '');
     if (!cleaned.startsWith('05') || cleaned.length !== 11) {
@@ -151,7 +144,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
 
       onSuccess({
         ...form,
-        full_name: existingPatient.full_name || trimmedName,
+        full_name: existingPatient.full_name,
         phone: cleaned,
         slot
       });
@@ -198,7 +191,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
           </div>
           <h2 className="text-xl font-bold text-gray-900">Randevu Talebi Oluştur</h2>
           <p className="text-[13px] text-gray-500 mt-1">
-            Bilgilerinizi doldurarak talebinizi kliniğimize iletin.
+            Kayıtlı telefon numaranızı girerek talebinizi kliniğimize iletin.
           </p>
         </div>
 
@@ -213,42 +206,25 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Ad Soyad */}
-          <div>
-            <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Ad Soyad <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                required
-                placeholder="Örn: Ahmet Yılmaz"
-                value={form.full_name}
-                onChange={e => set('full_name', e.target.value)}
-                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all"
-              />
-            </div>
-          </div>
-
           {/* Telefon Numarası */}
           <div>
             <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Kayıtlı Telefon Numarası <span className="text-red-500">*</span>
+              Kayıtlı Cep Telefonu <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="tel"
                 required
-                placeholder="05XXXXXXXXX (11 Hane)"
+                placeholder="05XXXXXXXXX"
                 value={form.phone}
                 onChange={handlePhone}
                 className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all font-mono"
               />
             </div>
-            <p className="text-[11px] text-gray-400 mt-1">
-              * Yalnızca kliniğimizde kayıtlı hastalar randevu açabilir (05 ile başlayınız).
+            <p className="text-[11px] text-teal-700 bg-teal-50/70 p-2 rounded-lg mt-1.5 flex items-center gap-1.5">
+              <span>🔒</span>
+              <span>Sistemimiz numaranızdan hasta kaydınızı otomatik olarak tanıyacaktır.</span>
             </p>
           </div>
 
