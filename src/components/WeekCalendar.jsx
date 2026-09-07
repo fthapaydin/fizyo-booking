@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { getClinicSchedule, isBreakSlot, isDayWorkingHour } from '../lib/scheduleUtils';
 
 const HOURS = [
   '08:00','09:00','10:00','11:00','12:00','13:00',
@@ -37,7 +38,9 @@ function normalizeTime(t) {
 const DAY_NAMES = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 
-function getSlotStatus(date, hour, bookedSet, pendingSet, pastFn) {
+function getSlotStatus(date, hour, dayKey, bookedSet, pendingSet, pastFn, schedule) {
+  if (isBreakSlot(hour, schedule)) return 'break';
+  if (!isDayWorkingHour(dayKey, hour, schedule)) return 'closed';
   if (pastFn(date, hour)) return 'past';
   const key = `${date}|${hour}`;
   if (bookedSet.has(key)) return 'booked';
@@ -45,9 +48,10 @@ function getSlotStatus(date, hour, bookedSet, pendingSet, pastFn) {
   return 'free';
 }
 
-export default function WeekCalendar({ sessions, sessionRequests, onSlotClick }) {
+export default function WeekCalendar({ sessions = [], sessionRequests = [], onSlotClick, clinic }) {
   const [weekStart, setWeekStart] = useState(() => getMondayOfWeek(new Date()));
 
+  const clinicSchedule = getClinicSchedule(clinic);
   const days = getWeekDays(weekStart);
   const today = toDateStr(new Date());
 
@@ -139,6 +143,10 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
           <div className="w-3 h-3 rounded-full bg-rose-400 shadow-sm shadow-rose-200"></div>
           <span>Dolu</span>
         </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-amber-400 shadow-sm shadow-amber-200"></div>
+          <span className="text-amber-800 font-semibold">☕ Mola</span>
+        </div>
         <div className="flex items-center gap-2 ml-auto text-gray-400 text-[11px]">
           <Info size={14} />
           <span>Randevu almak için yeşil alanlara tıklayın</span>
@@ -181,7 +189,7 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
                 {/* Cells */}
                 {days.map((day, i) => {
                   const dateStr = toDateStr(day);
-                  const status = getSlotStatus(dateStr, hour, bookedSet, pendingSet, isPast);
+                  const status = getSlotStatus(dateStr, hour, DAY_NAMES[i], bookedSet, pendingSet, isPast, clinicSchedule);
                   const isToday = dateStr === today;
                   
                   let cellClass = "relative border-r-2 border-gray-300 last:border-r-0 transition-all duration-200 h-[46px] group";
@@ -195,6 +203,20 @@ export default function WeekCalendar({ sessions, sessionRequests, onSlotClick })
                   } else if (status === 'pending') {
                     cellClass += " bg-orange-50";
                     content = <div className="absolute inset-1 rounded-md border border-orange-100 flex items-center justify-center"><span className="text-[11px] font-bold text-orange-400 uppercase tracking-wide">Talep</span></div>;
+                  } else if (status === 'break') {
+                    cellClass += " bg-amber-50/70 cursor-not-allowed";
+                    content = (
+                      <div className="absolute inset-1 rounded-md bg-amber-100/70 border border-amber-200/80 flex items-center justify-center select-none shadow-2xs">
+                        <span className="text-[10px] font-bold text-amber-800 tracking-wide">☕ MOLA</span>
+                      </div>
+                    );
+                  } else if (status === 'closed') {
+                    cellClass += " bg-gray-100/60 cursor-not-allowed";
+                    content = (
+                      <div className="absolute inset-1 rounded-md flex items-center justify-center select-none">
+                        <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">KAPALI</span>
+                      </div>
+                    );
                   } else if (status === 'free') {
                     cellClass += ` cursor-pointer ${isToday ? 'bg-emerald-50' : ''}`;
                     content = (

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { X, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle, UserCheck } from 'lucide-react';
+import { getClinicSchedule, isBreakSlot } from '../lib/scheduleUtils';
+import { getTreatmentAssignedStaff } from '../lib/rbacUtils';
 
 export default function BookingModal({ clinic, slot, treatments, staff = [], defaultTherapistId = '', onClose, onSuccess }) {
   const [form, setForm] = useState({
@@ -59,7 +61,15 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
         return;
       }
 
-      // 2. Geçmiş tarih ve saat kontrolü
+      // 2. Mola saati kontrolü
+      const clinicSchedule = getClinicSchedule(clinic);
+      if (isBreakSlot(slot.time, clinicSchedule)) {
+        setError('Seçtiğiniz saat kliniğimizin mola / öğle arası vaktidir. Lütfen randevunuz için başka bir saat seçiniz.');
+        setSubmitting(false);
+        return;
+      }
+
+      // 3. Geçmiş tarih ve saat kontrolü
       const slotDateTime = new Date(`${slot.date}T${slot.time}`);
       if (slotDateTime <= new Date()) {
         setError('Geçmiş bir tarih veya saat için randevu talebi oluşturulamaz.');
@@ -235,7 +245,19 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
               <select
                 required
                 value={form.treatment_id}
-                onChange={e => set('treatment_id', e.target.value)}
+                onChange={e => {
+                  const newTrId = e.target.value;
+                  const tr = treatments.find(t => t.id === newTrId);
+                  const assignedIds = getTreatmentAssignedStaff(tr, clinic);
+                  const newEligible = (assignedIds && assignedIds.length > 0)
+                    ? staff.filter(s => assignedIds.includes(s.id))
+                    : staff.filter(s => s.role === 'therapist' || s.role === 'admin');
+                  let newThId = form.therapist_id;
+                  if (newThId && !newEligible.some(s => s.id === newThId)) {
+                    newThId = newEligible[0]?.id || '';
+                  }
+                  setForm(prev => ({ ...prev, treatment_id: newTrId, therapist_id: newThId }));
+                }}
                 className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-white appearance-none cursor-pointer"
               >
                 <option value="">Hizmet seçiniz...</option>
@@ -263,7 +285,15 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                   className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-white appearance-none cursor-pointer"
                 >
                   <option value="">{staff.length > 1 ? 'Fizyoterapist seçiniz *' : 'Fark Etmez / İlk Müsait Terapist'}</option>
-                  {staff.map(s => (
+                  {(form.treatment_id ? (() => {
+                    const tr = treatments.find(t => t.id === form.treatment_id);
+                    const assignedIds = getTreatmentAssignedStaff(tr, clinic);
+                    if (assignedIds && assignedIds.length > 0) {
+                      const matched = staff.filter(s => assignedIds.includes(s.id));
+                      return matched.length > 0 ? matched : staff.filter(s => s.role === 'therapist' || s.role === 'admin');
+                    }
+                    return staff.filter(s => s.role === 'therapist' || s.role === 'admin');
+                  })() : staff.filter(s => s.role === 'therapist' || s.role === 'admin')).map(s => (
                     <option key={s.id} value={s.id}>
                       {s.full_name} ({s.title || 'Fzt.'})
                     </option>

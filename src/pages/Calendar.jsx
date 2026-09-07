@@ -158,6 +158,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
             sessions={filteredSessions}
             sessionRequests={filteredRequests}
             onSlotClick={setSelectedSlot}
+            clinic={clinic}
           />
         )}
       </section>
