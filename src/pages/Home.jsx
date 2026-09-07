@@ -388,7 +388,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                 </div>
                 <div>
                   <p className="text-[13px] font-bold text-slate-900">Anında Bildirim</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">SMS &amp; WhatsApp onayı</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">WhatsApp onay &amp; hatırlatma</p>
                 </div>
               </div>
             </div>

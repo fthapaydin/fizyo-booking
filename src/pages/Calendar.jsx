@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import WeekCalendar from '../components/WeekCalendar';
 import BookingModal from '../components/BookingModal';
 import { Activity, Clock, RefreshCw, ArrowLeft, Phone, MapPin, Stethoscope, User } from 'lucide-react';
+import { getSessionLocation, getSessionLocationMeta } from '../lib/sessionLocationUtils';
 
 export default function Calendar({ clinic, onSuccess, onBack }) {
   const [sessions, setSessions] = useState([]);
@@ -282,12 +283,12 @@ function LookupModal({ clinic, onClose }) {
       const [sRes, rRes] = await Promise.all([
         supabase
           .from('sessions')
-          .select('id, session_date, session_time, status, treatment:treatments(name), therapist:staff(full_name)')
+          .select('id, session_date, session_time, status, notes, treatment:treatments(name), therapist:staff(full_name)')
           .eq('patient_id', patient.id)
           .order('session_date', { ascending: false }),
         supabase
           .from('session_requests')
-          .select('id, requested_date, requested_time, status, rejection_reason, treatment:treatments(name), therapist:staff(full_name)')
+          .select('id, requested_date, requested_time, status, notes, rejection_reason, treatment:treatments(name), therapist:staff(full_name)')
           .eq('patient_id', patient.id)
           .order('created_at', { ascending: false })
       ]);
@@ -471,9 +472,19 @@ function LookupModal({ clinic, onClose }) {
                       return (
                         <div key={i} className="p-3 rounded-xl border border-gray-200/90 bg-white text-[12px] space-y-1.5 shadow-2xs">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-gray-900">
-                              {maskTreatment(item.treatment?.name)}
-                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-bold text-gray-900">
+                                {maskTreatment(item.treatment?.name)}
+                              </span>
+                              {(() => {
+                                const locMeta = getSessionLocationMeta(getSessionLocation(item.notes));
+                                return (
+                                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-semibold border ${locMeta.badgeClass}`}>
+                                    {locMeta.icon} {locMeta.label}
+                                  </span>
+                                );
+                              })()}
+                            </div>
                             <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                               isApproved ? 'bg-slate-100 text-slate-800' :
                               isPending ? 'bg-amber-50 text-amber-800 border border-amber-200' :

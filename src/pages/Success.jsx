@@ -71,6 +71,21 @@ export default function Success({ bookingInfo, onBack }) {
                 </div>
               </div>
             )}
+
+            {bookingInfo?.location_type && (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0 text-base">
+                  {bookingInfo.location_type === 'evde' ? '🏠' : bookingInfo.location_type === 'uzaktan' ? '💻' : '🏥'}
+                </div>
+                <div>
+                  <p className="text-[11px] text-gray-400 font-medium">Hizmet Yeri Tercihi</p>
+                  <p className="text-[14px] font-semibold text-gray-800">
+                    {bookingInfo.location_type === 'evde' ? 'Evde Fizyoterapi & Ziyaret' :
+                     bookingInfo.location_type === 'uzaktan' ? 'Uzaktan / Online Danışmanlık' : 'Klinikte Tedavi'}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Info box */}
