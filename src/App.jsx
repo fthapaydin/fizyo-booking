@@ -3,12 +3,18 @@ import { supabase } from './lib/supabase';
 import Home from './pages/Home';
 import Calendar from './pages/Calendar';
 import Success from './pages/Success';
+import NotFound from './pages/NotFound';
+import OfflineBanner from './components/OfflineBanner';
 import { Loader2 } from 'lucide-react';
 import './index.css';
 
 export default function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search);
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+    if (params.get('page') === '404' || path === '404') {
+      return '404';
+    }
     if (params.get('page') === 'home' || params.get('view') === 'home') {
       return 'home';
     }
@@ -95,25 +101,45 @@ export default function App() {
     );
   }
 
+  if (page === '404') {
+    return (
+      <>
+        <OfflineBanner />
+        <NotFound onGoHome={() => setPage('home')} />
+      </>
+    );
+  }
+
   if (page === 'success') {
-    return <Success bookingInfo={bookingInfo} clinic={clinic} onBack={handleBack} />;
+    return (
+      <>
+        <OfflineBanner />
+        <Success bookingInfo={bookingInfo} clinic={clinic} onBack={handleBack} />
+      </>
+    );
   }
 
   if (page === 'calendar') {
     return (
-      <Calendar
-        clinic={clinic}
-        onSuccess={handleSuccess}
-        onBack={() => setPage('home')}
-      />
+      <>
+        <OfflineBanner />
+        <Calendar
+          clinic={clinic}
+          onSuccess={handleSuccess}
+          onBack={() => setPage('home')}
+        />
+      </>
     );
   }
 
   return (
-    <Home
-      clinic={clinic}
-      onSelectClinic={handleSelectClinic}
-      onDirectCalendar={() => setPage('calendar')}
-    />
+    <>
+      <OfflineBanner />
+      <Home
+        clinic={clinic}
+        onSelectClinic={handleSelectClinic}
+        onDirectCalendar={() => setPage('calendar')}
+      />
+    </>
   );
 }
