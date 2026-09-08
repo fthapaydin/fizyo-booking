@@ -282,26 +282,21 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
               </div>
             </div>
 
-            {/* 4. FatalSoft & Yazılım Altyapısı */}
+            {/* 4. Kurumsal & Yazılım Altyapısı */}
             <div className="space-y-3">
               <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
-                Yazılım &amp; Altyapı
+                Geliştirici &amp; Altyapı
               </h4>
               <p className="text-[12px] text-slate-400 leading-relaxed">
-                Bu randevu sistemi <strong className="text-white font-semibold">Fizyotim Bulut Klinik Çözümleri</strong> ve <strong className="text-white font-semibold">FatalSoft</strong> altyapısı ile güvence altındadır.
+                Bu randevu sistemi, fizyoterapi merkezleri için özel geliştirilmiş <strong className="text-white font-medium">Fizyotim</strong> bulut teknolojisi ve <strong className="text-white font-medium">FatalSoft</strong> altyapısıyla kesintisiz olarak çalışmaktadır.
               </p>
-              
-              <div className="p-3 rounded-xl bg-slate-800/70 border border-slate-700/80 space-y-1.5 text-[11px]">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">FatalSoft Bilişim</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">Aktif SaaS</span>
-                </div>
-                <p className="text-slate-400">Klinik otomasyonu, hasta takip ve dijital randevu yazılımları.</p>
+              <div className="pt-2 border-t border-slate-800 space-y-1.5 text-[12px]">
+                <div className="text-slate-300 font-medium">FatalSoft Bilişim Teknolojileri</div>
                 <a 
-                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20SaaS%20Bilgi%20Talebi" 
-                  className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium pt-0.5"
+                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Bilgi%20Talebi" 
+                  className="inline-flex items-center gap-1.5 text-slate-400 hover:text-emerald-400 transition-colors"
                 >
-                  <Mail size={12} />
+                  <Mail size={13} className="text-emerald-500" />
                   <span>fatalsoft.inc@gmail.com</span>
                 </a>
               </div>
