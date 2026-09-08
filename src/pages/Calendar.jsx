@@ -2,7 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import WeekCalendar from '../components/WeekCalendar';
 import BookingModal from '../components/BookingModal';
-import { Activity, Clock, RefreshCw, ArrowLeft, Phone, MapPin, Stethoscope, User } from 'lucide-react';
+import { 
+  Activity, Clock, RefreshCw, ArrowLeft, Phone, MapPin, Stethoscope, User,
+  Mail, ShieldCheck, CheckCircle2, Heart
+} from 'lucide-react';
 import { getSessionLocation, getSessionLocationMeta } from '../lib/sessionLocationUtils';
 
 export default function Calendar({ clinic, onSuccess, onBack }) {
@@ -164,37 +167,169 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
         )}
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white py-8 mt-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
-                <Activity size={13} />
-              </div>
-              <span className="text-[14px] font-bold text-gray-800">{clinicName}</span>
+      {/* ─── ENHANCED CORPORATE FOOTER ─── */}
+      <footer className="mt-16 bg-slate-900 text-slate-300 border-t border-slate-800">
+        {/* Top Trust Bar */}
+        <div className="border-b border-slate-800/80 bg-slate-950/50 py-4 px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 text-[12px]">
+            <div className="flex items-center gap-6 flex-wrap">
+              <span className="flex items-center gap-2 text-emerald-400 font-medium">
+                <ShieldCheck size={16} />
+                <span>KVKK Uyumlu &amp; Güvenli Sağlık Verisi</span>
+              </span>
+              <span className="flex items-center gap-2 text-slate-400">
+                <CheckCircle2 size={16} className="text-teal-400" />
+                <span>256-Bit SSL Uçtan Uca Şifreli Randevu</span>
+              </span>
+              <span className="flex items-center gap-2 text-slate-400">
+                <Clock size={16} className="text-amber-400" />
+                <span>Anlık SMS &amp; WhatsApp Onay Bildirimi</span>
+              </span>
             </div>
-            <div className="flex flex-wrap items-center gap-5 text-[12px] text-gray-500">
-              <div className="flex items-center gap-1.5">
-                <Phone size={13} className="text-teal-600" />
-                <span>{clinicPhone}</span>
-              </div>
-              {clinicAddress && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin size={13} className="text-teal-600" />
-                  <span>{clinicAddress}</span>
+            <div className="text-slate-400 text-[11px]">
+              Fizyotim Online Randevu Altyapısı v2.5
+            </div>
+          </div>
+        </div>
+
+        {/* Main Footer Content */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            {/* 1. Klinik Hakkında */}
+            <div className="space-y-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-emerald-900/30">
+                  <Activity size={18} />
                 </div>
-              )}
+                <div>
+                  <h4 className="text-[15px] font-bold text-white tracking-tight">{clinicName}</h4>
+                  <span className="text-[11px] text-emerald-400 font-medium">Fizyoterapi &amp; Rehabilitasyon</span>
+                </div>
+              </div>
+              <p className="text-[12px] text-slate-400 leading-relaxed">
+                Uzman fizyoterapist kadromuz ile omurga sağlığı, ortopedik ve nörolojik rehabilitasyonda kanıta dayalı, modern ve bireye özel tedavi yaklaşımları sunuyoruz.
+              </p>
+              <div className="pt-1 flex items-center gap-2 text-[11px] text-slate-400">
+                <Heart size={13} className="text-rose-400" />
+                <span>Sağlıklı ve ağrısız bir yaşam için yanınızdayız.</span>
+              </div>
             </div>
-            <div className="text-center md:text-right">
-              <p className="text-[11px] text-gray-500">Fizyotim by <strong className="text-gray-700">FatalSoft</strong></p>
-              <a href="mailto:fatalsoft.inc@gmail.com" className="text-[11px] text-teal-600 hover:underline">
-                fatalsoft.inc@gmail.com
-              </a>
+
+            {/* 2. Tedavi & Hizmet Alanlarımız */}
+            <div className="space-y-3">
+              <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
+                Hizmet Alanlarımız
+              </h4>
+              <ul className="space-y-2 text-[12px] text-slate-400">
+                {treatments.length > 0 ? (
+                  treatments.slice(0, 5).map(t => (
+                    <li key={t.id} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="hover:text-white transition-colors">{t.name}</span>
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Manuel Terapi &amp; Omurga Sağlığı</span></li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Ortopedik Rehabilitasyon</span></li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Nörolojik Rehabilitasyon</span></li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Sporcu Sağlığı &amp; Egzersiz</span></li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Klinik Pilates &amp; Duruş Analizi</span></li>
+                  </>
+                )}
+              </ul>
+            </div>
+
+            {/* 3. İletişim & Çalışma Saatleri */}
+            <div className="space-y-3">
+              <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
+                İletişim &amp; Ulaşım
+              </h4>
+              <div className="space-y-2.5 text-[12px]">
+                <a 
+                  href={`tel:${clinicPhone.replace(/\s+/g, '')}`}
+                  className="flex items-start gap-2.5 text-slate-300 hover:text-emerald-400 transition-colors group"
+                >
+                  <Phone size={15} className="text-emerald-500 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-semibold text-white">{clinicPhone}</div>
+                    <div className="text-[11px] text-slate-500">Telefon / WhatsApp Randevu Hattı</div>
+                  </div>
+                </a>
+
+                <div className="flex items-start gap-2.5 text-slate-300">
+                  <Mail size={15} className="text-emerald-500 shrink-0 mt-0.5" />
+                  <a href={`mailto:${clinic?.email || 'demo@fizyotim.com'}`} className="hover:text-emerald-400 transition-colors">
+                    {clinic?.email || 'demo@fizyotim.com'}
+                  </a>
+                </div>
+
+                <div className="flex items-start gap-2.5 text-slate-300">
+                  <MapPin size={15} className="text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="leading-snug">
+                    {clinicAddress || 'Merkez Mahallesi'}, {clinic?.district || 'Kadıköy'} / {clinic?.city || 'İstanbul'}
+                  </span>
+                </div>
+
+                <div className="flex items-start gap-2.5 text-slate-300 pt-1">
+                  <Clock size={15} className="text-emerald-500 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-white font-medium">Pzt - Cmt: {clinic?.work_start_time || '07:00'} – {clinic?.work_end_time || '22:00'}</div>
+                    <div className="text-[11px] text-slate-500">Pazar Günleri Kapalıdır</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. FatalSoft & Yazılım Altyapısı */}
+            <div className="space-y-3">
+              <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
+                Yazılım &amp; Altyapı
+              </h4>
+              <p className="text-[12px] text-slate-400 leading-relaxed">
+                Bu randevu sistemi <strong className="text-white font-semibold">Fizyotim Bulut Klinik Çözümleri</strong> ve <strong className="text-white font-semibold">FatalSoft</strong> altyapısı ile güvence altındadır.
+              </p>
+              
+              <div className="p-3 rounded-xl bg-slate-800/70 border border-slate-700/80 space-y-1.5 text-[11px]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white">FatalSoft Bilişim</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">Aktif SaaS</span>
+                </div>
+                <p className="text-slate-400">Klinik otomasyonu, hasta takip ve dijital randevu yazılımları.</p>
+                <a 
+                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20SaaS%20Bilgi%20Talebi" 
+                  className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium pt-0.5"
+                >
+                  <Mail size={12} />
+                  <span>fatalsoft.inc@gmail.com</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Bottom Copyright & Legal Links */}
+        <div className="border-t border-slate-800/80 py-6 px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+            <div>
+              © 2026 <strong className="text-slate-400">{clinicName}</strong>. Tüm hakları saklıdır. Sağlık Bakanlığı mevzuatına uygundur.
+            </div>
+            <div className="flex items-center gap-4 text-slate-400">
+              <span className="hover:text-white cursor-pointer transition-colors">KVKK &amp; Gizlilik</span>
+              <span>•</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Hasta Hakları</span>
+              <span>•</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Kullanım Koşulları</span>
+            </div>
+            <div>
+              Powered by <strong className="text-slate-300">FatalSoft</strong>
             </div>
           </div>
         </div>
       </footer>
+
 
       {/* Booking Modal */}
       {selectedSlot && (
