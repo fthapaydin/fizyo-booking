@@ -299,6 +299,10 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
                   <Mail size={13} className="text-emerald-500" />
                   <span>fatalsoft.inc@gmail.com</span>
                 </a>
+                <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
+                  <MapPin size={12} className="text-emerald-500 shrink-0" />
+                  <span>Kocaeli / Gebze</span>
+                </div>
               </div>
             </div>
 
