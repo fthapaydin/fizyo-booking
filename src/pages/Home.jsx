@@ -716,11 +716,15 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Canlı Online Randevu Takvimi & Onay Sistemi</span>
+                      <span>Dinamik Takvim &amp; Öğle Molası Koruması</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Haftalık & Tekil Seans Kopyalama (Şablon Çoğaltma)</span>
+                      <span>Canlı Online Randevu Takvimi &amp; Onay Sistemi</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold">✓</span>
+                      <span>Haftalık &amp; Tekil Seans Kopyalama (Şablon Çoğaltma)</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
@@ -732,15 +736,15 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Toplu Ödeme & Otomatik FIFO Borç Dağıtımı</span>
+                      <span>Toplu Ödeme &amp; Otomatik FIFO Borç Dağıtımı</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Kurumsal PDF Makbuz & WhatsApp Tek Tıkla Paylaşım</span>
+                      <span>Kurumsal PDF Makbuz &amp; Dinamik Seans Dökümü</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Personel Performans & Seans Raporlama</span>
+                      <span>Personel Performans, Ciro &amp; Excel Raporlama</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
@@ -748,7 +752,7 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Görev Yönetimi & Takvim Ayarlama</span>
+                      <span>Klinik İçi Görev Yönetimi &amp; Notlar</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
