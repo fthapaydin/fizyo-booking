@@ -1,11 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
-import { getClinicSchedule, isBreakSlot, isDayWorkingHour } from '../lib/scheduleUtils';
+import { getClinicSchedule, isBreakSlot, isDayWorkingHour, getDynamicHours } from '../lib/scheduleUtils';
 
-const HOURS = [
-  '08:00','09:00','10:00','11:00','12:00','13:00',
-  '14:00','15:00','16:00','17:00','18:00','19:00','20:00',
-];
 
 function getWeekDays(startDate) {
   const days = [];
@@ -51,7 +47,8 @@ function getSlotStatus(date, hour, dayKey, bookedSet, pendingSet, pastFn, schedu
 export default function WeekCalendar({ sessions = [], sessionRequests = [], onSlotClick, clinic }) {
   const [weekStart, setWeekStart] = useState(() => getMondayOfWeek(new Date()));
 
-  const clinicSchedule = getClinicSchedule(clinic);
+  const clinicSchedule = useMemo(() => getClinicSchedule(clinic), [clinic]);
+  const hours = useMemo(() => getDynamicHours(clinicSchedule), [clinicSchedule]);
   const days = getWeekDays(weekStart);
   const today = toDateStr(new Date());
 
@@ -98,30 +95,33 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
       {/* Calendar Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-5 border-b-2 border-gray-300">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          <p className="text-[13px] text-gray-500 mt-1">
-            {days[0].getDate()} {MONTHS[days[0].getMonth()]} – {days[6].getDate()} {MONTHS[days[6].getMonth()]}
-          </p>
+          <span className="text-[12px] font-bold text-teal-600 uppercase tracking-wider block mb-1">
+            Randevu Takvimi
+          </span>
+          <h3 className="text-xl font-black text-gray-900 tracking-tight">
+            {title}
+          </h3>
         </div>
         
         <div className="flex items-center gap-2 mt-4 sm:mt-0">
           <button
             onClick={goToday}
-            className="h-9 px-4 rounded-xl border border-gray-200 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"
+            className="px-3 py-1.5 rounded-xl border border-gray-300 hover:bg-gray-50 text-[12px] font-bold text-gray-700 transition-colors shadow-2xs cursor-pointer"
           >
             Bugün
           </button>
-          <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-0.5">
+          <div className="flex items-center rounded-xl border border-gray-300 p-0.5 bg-gray-50/50 shadow-2xs">
             <button
               onClick={prevWeek}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-white hover:shadow-sm transition-all active:scale-95"
+              className="w-8 h-8 rounded-lg hover:bg-white text-gray-600 flex items-center justify-center transition-colors cursor-pointer"
+              title="Önceki Hafta"
             >
               <ChevronLeft size={18} strokeWidth={2.5} />
             </button>
-            <div className="w-[1px] h-4 bg-gray-200 mx-0.5"></div>
             <button
               onClick={nextWeek}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-white hover:shadow-sm transition-all active:scale-95"
+              className="w-8 h-8 rounded-lg hover:bg-white text-gray-600 flex items-center justify-center transition-colors cursor-pointer"
+              title="Sonraki Hafta"
             >
               <ChevronRight size={18} strokeWidth={2.5} />
             </button>
@@ -129,11 +129,11 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
         </div>
       </div>
 
-      {/* Legend */}
+      {/* Legend - Sadece Müsait, Onay Bekliyor, Dolu (Mola kaldırıldı) */}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3.5 bg-gray-50/50 border-b-2 border-gray-300 text-[12px] text-gray-600 font-medium">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-400 shadow-sm shadow-emerald-200"></div>
-          <span className="text-gray-700">Müsait</span>
+          <span className="text-gray-700 font-semibold">Müsait</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-orange-400 shadow-sm shadow-orange-200"></div>
@@ -142,10 +142,6 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-rose-400 shadow-sm shadow-rose-200"></div>
           <span>Dolu</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-amber-400 shadow-sm shadow-amber-200"></div>
-          <span className="text-amber-800 font-semibold">☕ Mola</span>
         </div>
         <div className="flex items-center gap-2 ml-auto text-gray-400 text-[11px]">
           <Info size={14} />
@@ -176,7 +172,7 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
 
           {/* Slots */}
           <div className="bg-gray-50/30">
-            {HOURS.map(hour => (
+            {hours.map(hour => (
               <div
                 key={hour}
                 className="grid grid-cols-[70px_repeat(7,1fr)] border-b-2 border-gray-300 last:border-0"
@@ -204,12 +200,9 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
                     cellClass += " bg-orange-50";
                     content = <div className="absolute inset-1 rounded-md border border-orange-100 flex items-center justify-center"><span className="text-[11px] font-bold text-orange-400 uppercase tracking-wide">Talep</span></div>;
                   } else if (status === 'break') {
-                    cellClass += " bg-amber-50/70 cursor-not-allowed";
-                    content = (
-                      <div className="absolute inset-1 rounded-md bg-amber-100/70 border border-amber-200/80 flex items-center justify-center select-none shadow-2xs">
-                        <span className="text-[10px] font-bold text-amber-800 tracking-wide">☕ MOLA</span>
-                      </div>
-                    );
+                    // Mola saatinde kullanıcıya mola yazısı gösterilmez, sadece seçilemez kilitli alan kalır
+                    cellClass += " bg-gray-100/50 cursor-not-allowed";
+                    content = null;
                   } else if (status === 'closed') {
                     cellClass += " bg-gray-100/60 cursor-not-allowed";
                     content = (

@@ -3,10 +3,11 @@ import { supabase } from '../lib/supabase';
 import { X, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle, UserCheck } from 'lucide-react';
 import { getClinicSchedule, isBreakSlot } from '../lib/scheduleUtils';
 import { getTreatmentAssignedStaff } from '../lib/rbacUtils';
-import { encodeSessionNotes, SESSION_LOCATIONS } from '../lib/sessionLocationUtils';
+import { encodeSessionNotes, getClinicLocations, getSessionLocationMeta } from '../lib/sessionLocationUtils';
 
 export default function BookingModal({ clinic, slot, treatments, staff = [], defaultTherapistId = '', onClose, onSuccess }) {
-  const [locationType, setLocationType] = useState('klinik');
+  const availableLocations = getClinicLocations(clinic);
+  const [locationType, setLocationType] = useState(() => availableLocations[0]?.id || 'klinik');
   const [form, setForm] = useState({
     phone: '',
     treatment_id: treatments[0]?.id || '',
@@ -140,7 +141,8 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
       }
 
       // 5. Randevu talebi oluştur (Hizmet yeri etiketi eklenerek)
-      const finalNotes = encodeSessionNotes(form.notes, locationType);
+      const locMeta = getSessionLocationMeta(locationType, clinic);
+      const finalNotes = encodeSessionNotes(form.notes, locationType, locMeta?.label);
       const { error: reqErr } = await supabase
         .from('session_requests')
         .insert([{
@@ -307,36 +309,30 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
             </div>
           )}
 
-          {/* Hizmet Yeri Tercihi (Klinikte / Evde / Uzaktan) */}
+          {/* Hizmet Yeri Tercihi */}
           <div>
             <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
               Hizmet Yeri Tercihi
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {SESSION_LOCATIONS.map((loc) => {
-                const isSelected = locationType === loc.id;
+            <div className={`grid gap-2 ${availableLocations.length <= 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+              {availableLocations.map((loc) => {
+                const isSelected = locationType === loc.id || locationType === loc.label;
                 return (
                   <button
                     key={loc.id}
                     type="button"
                     onClick={() => setLocationType(loc.id)}
-                    className={`py-2 px-2 rounded-xl text-center border transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                    className={`h-10 px-3 rounded-xl border text-center transition-all cursor-pointer flex items-center justify-center text-[12px] font-semibold select-none ${
                       isSelected
                         ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
                         : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="text-base">{loc.icon}</span>
-                    <span className="text-[12px] font-bold leading-none">{loc.label}</span>
+                    <span className="truncate">{loc.label}</span>
                   </button>
                 );
               })}
             </div>
-            <p className="text-[11px] text-gray-500 mt-1.5">
-              {locationType === 'klinik' && '🏥 Klinik merkezimizde yüz yüze profesyonel seans.'}
-              {locationType === 'evde' && '🏠 Uzman fizyoterapistimiz ikametgahınıza gelerek yerinde seans uygular.'}
-              {locationType === 'uzaktan' && '💻 Görüntülü online görüşme ile egzersiz ve danışmanlık seansı.'}
-            </p>
           </div>
 
           {/* Hızlı Şikayet / Ağrı Bölgesi Seçimi */}
