@@ -716,11 +716,11 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Canlı Online Randevu Takvimi</span>
+                      <span>Canlı Online Randevu Takvimi & Onay Sistemi</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
-                      <span>Haftalık &amp; Tekil Seans Kopyalama (Şablon Çoğaltma)</span>
+                      <span>Haftalık & Tekil Seans Kopyalama (Şablon Çoğaltma)</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
@@ -728,7 +728,27 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
+                      <span>Seans Hizmet Yeri (Klinikte / Evde / Uzaktan)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold">✓</span>
+                      <span>Toplu Ödeme & Otomatik FIFO Borç Dağıtımı</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold">✓</span>
+                      <span>Kurumsal PDF Makbuz & WhatsApp Tek Tıkla Paylaşım</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold">✓</span>
+                      <span>Personel Performans & Seans Raporlama</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold">✓</span>
                       <span>WhatsApp Randevu Onay Bildirimleri</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-slate-400 font-bold">✓</span>
+                      <span>Görev Yönetimi & Takvim Ayarlama</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-slate-400 font-bold">✓</span>
@@ -852,7 +872,15 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
                     </li>
                     <li className="flex items-start gap-2.5">
                       <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Otomatik WhatsApp:</strong> Hatırlatmalar ve randevu onayları hastanın cebine gitsin.</span>
+                      <span><strong>Hizmet Yeri Takibi:</strong> Her seans için klinikte / evde / uzaktan ayrımı yapın.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong>Otomatik WhatsApp:</strong> Hatırlatmalar ve randevu onayları, emoji içermeyen temiz mesajlarla.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                      <span><strong>Kurumsal PDF & Toplu Ödeme:</strong> FIFO borç dağıtımı, tek tıkla WhatsApp makbuzu.</span>
                     </li>
                     <li className="flex items-start gap-2.5">
                       <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
