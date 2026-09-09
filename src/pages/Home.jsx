@@ -272,36 +272,40 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
       <main className="flex-1">
         
         {/* ─── 2. HERO SECTION ──────────────────────────────────── */}
-        <section className="relative overflow-hidden pt-12 pb-14 sm:pt-16 sm:pb-20 border-b border-gray-100 bg-gradient-to-b from-teal-50/60 via-white to-slate-50/70">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <section className="relative overflow-hidden pt-14 pb-16 sm:pt-20 sm:pb-24 border-b border-slate-200/60 bg-white">
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:48px_48px] opacity-50 pointer-events-none" />
+          
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-10">
             
             {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-full px-3.5 py-1 mb-5 max-w-full">
-              <span className="text-[11px] sm:text-[12px] font-semibold text-slate-700 truncate">
-                {isSpecificClinicMode ? `${clinic.name} • Canlı Randevu Portalı` : 'Fizyotim • 81 İlde Fizyoterapi & Manuel Terapi Randevusu'}
+            <div className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-full px-4 py-1.5 mb-6 max-w-full shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+              <span className="text-[11px] sm:text-[12px] font-semibold tracking-wide truncate">
+                {isSpecificClinicMode ? `${clinic.name} • Canlı Randevu Portalı` : 'Fizyotim — 81 İlde Fizyoterapi & Online Randevu'}
               </span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.18] mb-4 tracking-tight px-2">
+            <h1 className="text-[34px] sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.12] mb-5 tracking-tight px-2">
               {isSpecificClinicMode ? (
                 <>
                   {clinic.name} ile<br />
-                  <span>Sağlığınızı Ertelemeyin</span>
+                  <span className="text-slate-500">Sağlığınızı Ertelemeyin</span>
                 </>
               ) : (
                 <>
                   Doğru Fizyoterapisti Bulun,<br />
-                  <span>Dakikalar İçinde Randevu Alın</span>
+                  <span className="text-slate-500">Dakikalar İçinde Randevu Alın</span>
                 </>
               )}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-[14px] sm:text-[16px] text-slate-500 max-w-2xl mx-auto mb-8 leading-relaxed font-normal px-2">
+            <p className="text-[15px] sm:text-[17px] text-slate-500 max-w-2xl mx-auto mb-9 leading-relaxed font-normal px-2">
               {isSpecificClinicMode
                 ? 'Müsait seans saatlerini canlı takvimden görüntüleyin, kayıtlı telefon numaranızla 1 dakikada randevu talebinizi iletin.'
-                : 'Şehrinizdeki ve ilçenizdeki uzman fizyoterapistleri keşfedin, müsait seans saatlerini canlı görün ve online randevunuzu planlayın.'}
+                : 'Şehrinizdeki uzman fizyoterapistleri keşfedin, müsait seans saatlerini canlı görün ve online randevunuzu planlayın.'}
             </p>
 
             {/* CTA Buttons */}
@@ -309,39 +313,39 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
               <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={onDirectCalendar}
-                  className="h-11 px-8 bg-slate-900 text-white rounded-xl text-[14px] font-semibold hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer inline-flex items-center gap-2"
+                  className="h-12 px-8 bg-slate-900 text-white rounded-xl text-[14px] font-bold hover:bg-slate-800 transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
                 >
                   <span>Müsait Saatleri Gör &amp; Randevu Al</span>
                   <ArrowRight size={15} />
                 </button>
               </div>
             ) : (
-              <div className="space-y-4 max-w-lg mx-auto">
+              <div className="space-y-5 max-w-lg mx-auto">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     onClick={() => scrollToSection('search-section')}
-                    className="w-full sm:w-auto h-11 px-6 bg-slate-900 text-white rounded-xl text-[13px] font-semibold hover:bg-slate-800 transition-colors shadow-2xs inline-flex items-center justify-center cursor-pointer"
+                    className="w-full sm:w-auto h-12 px-7 bg-slate-900 text-white rounded-xl text-[14px] font-bold hover:bg-slate-800 transition-all shadow-md inline-flex items-center justify-center cursor-pointer"
                   >
-                    İl &amp; İlçe Seçerek Klinik Bul
+                    Klinik Bul &amp; Randevu Al
                   </button>
                   <button
                     onClick={() => scrollToSection('how-it-works')}
-                    className="w-full sm:w-auto h-11 px-6 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-[13px] font-semibold transition-colors shadow-2xs inline-flex items-center justify-center cursor-pointer"
+                    className="w-full sm:w-auto h-12 px-6 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-[13px] font-semibold transition-colors shadow-2xs inline-flex items-center justify-center cursor-pointer"
                   >
                     Nasıl Çalışır?
                   </button>
                 </div>
 
                 {/* Quick Popular Cities Filter Pills */}
-                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-2">
-                  <span className="text-[11px] font-medium text-slate-400 mr-1">
-                    Popüler İller:
+                <div className="flex flex-wrap items-center justify-center gap-1.5">
+                  <span className="text-[11px] font-medium text-slate-400 mr-0.5">
+                    Hızlı Seçim:
                   </span>
                   {POPULAR_CITIES.map((city) => (
                     <button
                       key={city}
                       onClick={() => handleQuickCityClick(city)}
-                      className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-slate-200 text-slate-700 hover:border-slate-400 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+                      className="px-3 py-1 rounded-full text-[11px] font-medium bg-slate-100 border border-slate-200 text-slate-600 hover:border-slate-400 hover:text-slate-900 hover:bg-white transition-all cursor-pointer"
                     >
                       {city}
                     </button>
@@ -350,194 +354,161 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
               </div>
             )}
 
-            {/* Trust Badges Bar (Tek Renk Kurumsal Kutular) */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mt-12 pt-8 border-t border-slate-200/80 text-left">
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                  <MapPin size={15} />
+            {/* Stats Bar */}
+            {!isSpecificClinicMode && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 rounded-2xl overflow-hidden max-w-3xl mx-auto mt-14 border border-slate-200 shadow-sm">
+                <div className="p-5 bg-white text-center">
+                  <p className="text-2xl font-black text-slate-900 tracking-tight">81</p>
+                  <p className="text-[11px] font-medium text-slate-500 mt-1">İl Desteği</p>
                 </div>
-                <div>
-                  <p className="text-[13px] font-bold text-slate-900">81 İl Desteği</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Tüm il ve ilçelerde</p>
+                <div className="p-5 bg-white text-center">
+                  <p className="text-2xl font-black text-slate-900 tracking-tight">7/24</p>
+                  <p className="text-[11px] font-medium text-slate-500 mt-1">Canlı Takvim</p>
                 </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                  <Calendar size={15} />
+                <div className="p-5 bg-white text-center">
+                  <p className="text-2xl font-black text-slate-900 tracking-tight">%100</p>
+                  <p className="text-[11px] font-medium text-slate-500 mt-1">Diplomalı Uzmanlar</p>
                 </div>
-                <div>
-                  <p className="text-[13px] font-bold text-slate-900">Canlı Takvim</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">08:00 – 20:00 seanslar</p>
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                  <ShieldCheck size={15} />
-                </div>
-                <div>
-                  <p className="text-[13px] font-bold text-slate-900">Doğrulanmış Uzman</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Diplomalı fizyoterapistler</p>
+                <div className="p-5 bg-white text-center">
+                  <p className="text-2xl font-black text-slate-900 tracking-tight">WA</p>
+                  <p className="text-[11px] font-medium text-slate-500 mt-1">Anında Bildirim</p>
                 </div>
               </div>
-
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                  <MessageSquare size={15} />
-                </div>
-                <div>
-                  <p className="text-[13px] font-bold text-slate-900">Anında Bildirim</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">WhatsApp onay &amp; hatırlatma</p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </section>
 
         {/* ─── 3. HOW IT WORKS (3 ADIMDA RANDEVU) ────────────────── */}
         <section id="how-it-works" className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-14 sm:pt-20 sm:pb-16 scroll-mt-28">
           <div className="text-center max-w-xl mx-auto mb-12">
-            <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
-              Kolay &amp; Hızlı İşleyiş
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-3">
+              İşleyiş
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2.5 mb-2 tracking-tight">
-              3 Kolay Adımda Randevunuz Hazır
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
+              3 Adımda Randevunuz Hazır
             </h2>
-            <p className="text-[13px] text-slate-400">Telefon başında beklemeden, dilediğiniz an randevunuzu ayırtın.</p>
+            <p className="text-[13px] text-slate-400 leading-relaxed">Telefon başında beklemeden, dilediğiniz saatten randevunuzu ayırtın.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-mono font-bold text-slate-400 block">01</span>
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <Search size={15} />
-                </div>
-              </div>
-              <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">Şehir &amp; Klinik Seçin</h3>
-              <p className="text-[12px] text-slate-500 leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="bg-white rounded-2xl border border-slate-200 p-7 shadow-2xs hover:border-slate-300 hover:shadow-md transition-all border-l-4 border-l-slate-900">
+              <p className="text-[40px] font-black text-slate-100 leading-none mb-5 font-mono select-none">01</p>
+              <h3 className="text-[16px] font-bold text-slate-900 mb-2">Şehir &amp; Klinik Seçin</h3>
+              <p className="text-[13px] text-slate-500 leading-relaxed">
                 İl ve ilçenizdeki kayıtlı merkezleri inceleyin, size en uygun fizyoterapisti ve tedaviyi belirleyin.
               </p>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-mono font-bold text-slate-400 block">02</span>
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <Calendar size={15} />
-                </div>
-              </div>
-              <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">Canlı Takvimden Saat Seçin</h3>
-              <p className="text-[12px] text-slate-500 leading-relaxed">
-                Terapistin boş ve dolu saatlerini canlı takvimde görün. Size uygun olan seans saatine tıklayın.
+            <div className="bg-white rounded-2xl border border-slate-200 p-7 shadow-2xs hover:border-slate-300 hover:shadow-md transition-all border-l-4 border-l-slate-400">
+              <p className="text-[40px] font-black text-slate-100 leading-none mb-5 font-mono select-none">02</p>
+              <h3 className="text-[16px] font-bold text-slate-900 mb-2">Canlı Takvimden Saat Seçin</h3>
+              <p className="text-[13px] text-slate-500 leading-relaxed">
+                Terapistin boş ve dolu saatlerini canlı takvimde görün. Size uygun seans saatine tıklayın.
               </p>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-mono font-bold text-slate-400 block">03</span>
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <CheckCircle2 size={15} />
-                </div>
-              </div>
-              <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">WhatsApp ile Anında Onay</h3>
-              <p className="text-[12px] text-slate-500 leading-relaxed">
-                Kayıtlı telefon numaranızla talebinizi gönderin. Randevunuz onaylandığı an bildirim cebinize gelsin.
+            <div className="bg-white rounded-2xl border border-slate-200 p-7 shadow-2xs hover:border-slate-300 hover:shadow-md transition-all border-l-4 border-l-emerald-500">
+              <p className="text-[40px] font-black text-slate-100 leading-none mb-5 font-mono select-none">03</p>
+              <h3 className="text-[16px] font-bold text-slate-900 mb-2">WhatsApp ile Anında Onay</h3>
+              <p className="text-[13px] text-slate-500 leading-relaxed">
+                Kayıtlı telefonunuzla talebinizi gönderin. Klinik onayladığı an bildirim cebinize gelsin.
               </p>
             </div>
           </div>
         </section>
 
         {/* ─── 4. TREATMENTS SHOWCASE (CLICKABLE TO SEARCH) ──────── */}
-        <section id="treatments-section" className="bg-slate-50/80 border-y border-gray-200/80 pt-16 pb-16 sm:pt-20 sm:pb-20 scroll-mt-28">
+        <section id="treatments-section" className="bg-slate-50 border-y border-slate-200 pt-16 pb-16 sm:pt-20 sm:pb-20 scroll-mt-28">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <span className="text-[11px] font-bold text-slate-800 bg-white border border-slate-200/90 shadow-2xs px-3.5 py-1 rounded-full uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-3">
                 Klinik Uzmanlık Alanları
               </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mt-3 mb-2.5 tracking-tight">
-                Kliniklerimizde Sunulan Uzmanlıklar
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-3">
+                Kliniklerin Sunduğu Uzmanlıklar
               </h2>
-              <p className="text-[13px] sm:text-[14px] text-gray-500 leading-relaxed">
-                Her rahatsızlık için kanıta dayalı fizyoterapi ve manuel terapi protokolleri uygulanır. İlgilendiğiniz uzmanlığa tıklayarak bu alandaki klinikleri anında filtreleyebilirsiniz.
+              <p className="text-[13px] sm:text-[14px] text-slate-500 leading-relaxed">
+                İlgilendiğiniz uzmanlık alanına tıklayarak o alandaki klinikleri anında filtreleyin.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {TREATMENTS_SHOWCASE.map((t) => {
-                const IconComponent = 
-                  t.icon === 'Layers' ? Layers :
-                  t.icon === 'Sparkles' ? Sparkles :
-                  t.icon === 'Crosshair' ? Crosshair :
-                  t.icon === 'HeartPulse' ? HeartPulse :
-                  t.icon === 'Dumbbell' ? Dumbbell :
-                  t.icon === 'ShieldCheck' ? ShieldCheck :
-                  t.icon === 'Stethoscope' ? Stethoscope : Activity;
-
-                return (
-                  <div 
-                    key={t.id} 
-                    onClick={() => handleTreatmentClick(t.title)}
-                    className="bg-white rounded-2xl border border-gray-200/90 p-5 shadow-2xs hover:border-slate-800 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-3.5">
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 tracking-tight">
-                          {t.badge}
-                        </span>
-                        <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition-colors shadow-2xs">
-                          <IconComponent size={15} />
-                        </div>
-                      </div>
-                      <h4 className="font-bold text-gray-900 text-[14px] group-hover:text-slate-900 transition-colors mb-2 leading-snug">
-                        {t.title}
-                      </h4>
-                      <p className="text-[12px] text-gray-500 leading-relaxed mb-3.5">
-                        {t.desc}
-                      </p>
-                      
-                      {/* Clinical Indication Tags */}
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {t.tags?.map((tag, idx) => (
-                          <span key={idx} className="text-[10px] font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+              {TREATMENTS_SHOWCASE.map((t) => (
+                <div
+                  key={t.id}
+                  onClick={() => handleTreatmentClick(t.title)}
+                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs hover:border-slate-800 hover:shadow-lg transition-all cursor-pointer group flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="mb-3.5">
+                      <span className="inline-block text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 tracking-tight border border-slate-200">
+                        {t.badge}
+                      </span>
                     </div>
-
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">
-                      <span>Uzman Klinikleri Listele</span>
-                      <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                    <h4 className="font-bold text-slate-900 text-[14px] group-hover:text-slate-900 transition-colors mb-2 leading-snug">
+                      {t.title}
+                    </h4>
+                    <p className="text-[12px] text-slate-500 leading-relaxed mb-3.5">
+                      {t.desc}
+                    </p>
+                    
+                    {/* Clinical Indication Tags */}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {t.tags?.map((tag, idx) => (
+                        <span key={idx} className="text-[10px] font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                );
-              })}
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500 group-hover:text-slate-900 transition-colors">
+                    <span>Klinikleri Listele</span>
+                    <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ─── 5. QR CODE STAND BANNER ──────────────────────────── */}
+        {/* ─── 5. KLİNİKLER İÇİN PLATFORM TANITIM BANNER ─────────── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-18">
-          <div className="bg-slate-900 rounded-xl p-6 sm:p-8 md:p-10 text-white border border-slate-800 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
-            <div className="space-y-3 max-w-lg text-left">
-              <span className="inline-block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                Danışma &amp; Bekleme Salonu Kolaylığı
-              </span>
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight leading-snug">
-                Karekod ile Sıra Beklemeden Hızlı Randevu
-              </h3>
-              <p className="text-[13px] text-slate-400 leading-relaxed">
-                Kliniklerimizin bekleme salonlarında ve danışma masalarında yer alan QR kodları telefonunuzla okutarak, bir sonraki seansınızı saniyeler içinde ayırtabilirsiniz.
-              </p>
-            </div>
-
-            <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col items-center gap-2 shrink-0">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white p-2 rounded-lg flex items-center justify-center">
-                <QrCode size={80} className="text-slate-900" />
+          <div className="bg-slate-900 rounded-2xl p-7 sm:p-10 text-white border border-slate-800 shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-4">
+                <span className="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Klinik Yönetim Altyapısı
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black tracking-tight leading-snug">
+                  Kliniğiniz için Fizyotim'i keşfedin
+                </h3>
+                <p className="text-[13px] text-slate-400 leading-relaxed">
+                  Online randevu portalı, çoklu terapist yönetimi, kurumsal PDF raporlama, Excel analitiği ve QR masa standıyla kliniğinizi dijitalleştirin.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('contact-section')}
+                  className="h-11 px-6 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-[13px] inline-flex items-center gap-2 transition-colors cursor-pointer mt-2"
+                >
+                  <span>Demo &amp; Bilgi Al</span>
+                  <ArrowRight size={14} />
+                </button>
               </div>
-              <span className="text-[11px] font-medium text-slate-400">Kamera ile Okutun</span>
+
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'Dinamik Takvim', sub: 'Mola koruması dahil' },
+                  { label: 'Kurumsal PDF', sub: 'Logo & antetli raporlar' },
+                  { label: 'RBAC Yetki', sub: '3 rol: Admin / Terapist / Sekreter' },
+                  { label: 'Excel Raporu', sub: 'Ciro & performans analitiği' },
+                ].map((item) => (
+                  <div key={item.label} className="p-4 rounded-xl bg-slate-800 border border-slate-700">
+                    <p className="text-[13px] font-bold text-white">{item.label}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{item.sub}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -859,57 +830,41 @@ export default function Home({ clinic, onSelectClinic, onDirectCalendar }) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left Info Column */}
               <div className="lg:col-span-5 space-y-6">
-                <div className="p-6 rounded-3xl bg-slate-800/60 border border-slate-700/80 space-y-5">
-                  <h3 className="text-[16px] font-bold text-white flex items-center gap-2">
-                    <Building2 size={18} className="text-emerald-400" />
-                    <span>Neden Fizyotim?</span>
+                <div className="p-6 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-5">
+                  <h3 className="text-[16px] font-bold text-white">
+                    Neden Fizyotim?
                   </h3>
 
-                  <ul className="space-y-3.5 text-[13px] text-slate-300">
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Dakikalar İçinde Kurulum:</strong> Kredi kartı gerekmeden hemen başlayın.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Canlı Hasta Takvimi:</strong> Hastalarınız 7/24 randevu alsın, tek tıkla onaylayın.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Hizmet Yeri Takibi:</strong> Her seans için klinikte / evde / uzaktan ayrımı yapın.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Otomatik WhatsApp:</strong> Hatırlatmalar ve randevu onayları, emoji içermeyen temiz mesajlarla.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Kurumsal PDF & Toplu Ödeme:</strong> FIFO borç dağıtımı, tek tıkla WhatsApp makbuzu.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Masaüstü QR Standı:</strong> Danışma ve bekleme salonu için baskıya hazır stand üretici.</span>
-                    </li>
+                  <ul className="space-y-4 text-[13px] text-slate-300">
+                    {[
+                      { n: '01', title: 'Dakikalar İçinde Kurulum', desc: 'Kredi kartı gerekmeden hemen başlayın.' },
+                      { n: '02', title: 'Canlı Hasta Takvimi', desc: 'Hastalarınız 7/24 randevu alsın, tek tıkla onaylayın.' },
+                      { n: '03', title: 'Hizmet Yeri Takibi', desc: 'Klinikte / evde / uzaktan seans ayrımı yapın.' },
+                      { n: '04', title: 'Otomatik WhatsApp', desc: 'Hatırlatmalar ve onaylar — temiz, emojisiz mesajlarla.' },
+                      { n: '05', title: 'Kurumsal PDF & Toplu Ödeme', desc: 'FIFO borç dağıtımı, tek tıkla WhatsApp makbuzu.' },
+                      { n: '06', title: 'Masaüstü QR Standı', desc: 'Bekleme salonu için baskıya hazır stand üretici.' },
+                    ].map((item) => (
+                      <li key={item.n} className="flex items-start gap-3">
+                        <span className="text-[10px] font-mono font-bold text-slate-500 mt-0.5 shrink-0 w-5">{item.n}</span>
+                        <span><strong className="text-white font-semibold">{item.title}:</strong> {item.desc}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
-                <div className="p-6 rounded-3xl bg-emerald-950/40 border border-emerald-800/40 space-y-3">
-                  <h4 className="text-[14px] font-bold text-emerald-300 flex items-center gap-2">
-                    <Phone size={16} />
-                    <span>Hızlı Destek &amp; Doğrudan İletişim</span>
+                <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700/60 space-y-2">
+                  <h4 className="text-[13px] font-bold text-white">
+                    Hızlı Destek &amp; Doğrudan İletişim
                   </h4>
-                  <p className="text-[12px] text-emerald-100/80 leading-relaxed">
-                    Form doldurmak yerine doğrudan ekibimize ulaşmak isterseniz kurumsal e-posta üzerinden de yazabilirsiniz:
+                  <p className="text-[12px] text-slate-400 leading-relaxed">
+                    Form doldurmak yerine doğrudan ekibimize yazabilirsiniz:
                   </p>
-                  <div className="flex flex-col gap-2 pt-1 text-[13px]">
-                    <a
-                      href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Demo%20Talebi"
-                      className="text-white hover:text-emerald-300 font-mono font-medium flex items-center gap-2 transition-colors"
-                    >
-                      <Mail size={14} className="text-emerald-400" />
-                      <span>fatalsoft.inc@gmail.com</span>
-                    </a>
-                  </div>
+                  <a
+                    href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Demo%20Talebi"
+                    className="text-emerald-400 hover:text-emerald-300 font-mono text-[13px] font-medium transition-colors block pt-1"
+                  >
+                    fatalsoft.inc@gmail.com
+                  </a>
                 </div>
               </div>
 

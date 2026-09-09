@@ -91,14 +91,14 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
     : `${MONTHS[weekStart.getMonth()]} – ${MONTHS[weekEnd.getMonth()]} ${weekEnd.getFullYear()}`;
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/5 border border-gray-300 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       {/* Calendar Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-5 border-b-2 border-gray-300">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 border-b border-slate-200">
         <div>
-          <span className="text-[12px] font-bold text-teal-600 uppercase tracking-wider block mb-1">
-            Randevu Takvimi
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest block mb-1">
+            Seans Takvimi
           </span>
-          <h3 className="text-xl font-black text-gray-900 tracking-tight">
+          <h3 className="text-xl font-black text-slate-900 tracking-tight">
             {title}
           </h3>
         </div>
@@ -106,21 +106,21 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
         <div className="flex items-center gap-2 mt-4 sm:mt-0">
           <button
             onClick={goToday}
-            className="px-3 py-1.5 rounded-xl border border-gray-300 hover:bg-gray-50 text-[12px] font-bold text-gray-700 transition-colors shadow-2xs cursor-pointer"
+            className="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-[12px] font-bold text-slate-700 transition-colors shadow-2xs cursor-pointer"
           >
             Bugün
           </button>
-          <div className="flex items-center rounded-xl border border-gray-300 p-0.5 bg-gray-50/50 shadow-2xs">
+          <div className="flex items-center rounded-xl border border-slate-200 p-0.5 bg-slate-50 shadow-2xs">
             <button
               onClick={prevWeek}
-              className="w-8 h-8 rounded-lg hover:bg-white text-gray-600 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-lg hover:bg-white text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
               title="Önceki Hafta"
             >
               <ChevronLeft size={18} strokeWidth={2.5} />
             </button>
             <button
               onClick={nextWeek}
-              className="w-8 h-8 rounded-lg hover:bg-white text-gray-600 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-lg hover:bg-white text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
               title="Sonraki Hafta"
             >
               <ChevronRight size={18} strokeWidth={2.5} />
@@ -129,23 +129,23 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
         </div>
       </div>
 
-      {/* Legend - Sadece Müsait, Onay Bekliyor, Dolu (Mola kaldırıldı) */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3.5 bg-gray-50/50 border-b-2 border-gray-300 text-[12px] text-gray-600 font-medium">
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3 bg-slate-50/70 border-b border-slate-200 text-[12px] text-slate-600 font-medium">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-emerald-400 shadow-sm shadow-emerald-200"></div>
-          <span className="text-gray-700 font-semibold">Müsait</span>
+          <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-xs"></div>
+          <span className="text-slate-800 font-semibold">Müsait</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-orange-400 shadow-sm shadow-orange-200"></div>
+          <div className="w-3 h-3 rounded-full bg-amber-400 shadow-xs"></div>
           <span>Onay Bekliyor</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-rose-400 shadow-sm shadow-rose-200"></div>
+          <div className="w-3 h-3 rounded-full bg-slate-300 shadow-xs"></div>
           <span>Dolu</span>
         </div>
-        <div className="flex items-center gap-2 ml-auto text-gray-400 text-[11px]">
+        <div className="flex items-center gap-2 ml-auto text-slate-400 text-[11px]">
           <Info size={14} />
-          <span>Randevu almak için yeşil alanlara tıklayın</span>
+          <span>Randevu almak için yeşil kutulara tıklayın</span>
         </div>
       </div>
 
@@ -153,16 +153,16 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
       <div className="overflow-x-auto">
         <div className="min-w-[700px]">
           {/* Day headers */}
-          <div className="grid grid-cols-[70px_repeat(7,1fr)] border-b-2 border-gray-300">
-            <div className="bg-gray-50/30"></div>
+          <div className="grid grid-cols-[70px_repeat(7,1fr)] border-b border-slate-200">
+            <div className="bg-slate-50/50"></div>
             {days.map((day, i) => {
               const isToday = toDateStr(day) === today;
               return (
-                <div key={i} className={`py-4 text-center border-l-2 border-gray-300 flex flex-col items-center justify-center ${isToday ? 'bg-teal-50/30' : 'bg-white'}`}>
-                  <span className={`text-[12px] font-bold uppercase tracking-wider mb-1 ${isToday ? 'text-teal-600' : 'text-gray-400'}`}>
+                <div key={i} className={`py-3.5 text-center border-l border-slate-200 flex flex-col items-center justify-center ${isToday ? 'bg-slate-50' : 'bg-white'}`}>
+                  <span className={`text-[11px] font-bold uppercase tracking-wider mb-1 ${isToday ? 'text-slate-900 font-black' : 'text-slate-400'}`}>
                     {DAY_NAMES[i]}
                   </span>
-                  <div className={`w-8 h-8 flex items-center justify-center rounded-full text-[16px] font-bold ${isToday ? 'bg-teal-500 text-white shadow-md shadow-teal-200' : 'text-gray-800'}`}>
+                  <div className={`w-8 h-8 flex items-center justify-center rounded-full text-[15px] font-bold ${isToday ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-800'}`}>
                     {day.getDate()}
                   </div>
                 </div>
@@ -171,15 +171,15 @@ export default function WeekCalendar({ sessions = [], sessionRequests = [], onSl
           </div>
 
           {/* Slots */}
-          <div className="bg-gray-50/30">
+          <div className="bg-slate-50/20">
             {hours.map(hour => (
               <div
                 key={hour}
-                className="grid grid-cols-[70px_repeat(7,1fr)] border-b-2 border-gray-300 last:border-0"
+                className="grid grid-cols-[70px_repeat(7,1fr)] border-b border-slate-200 last:border-0"
               >
                 {/* Time label */}
-                <div className="flex items-center justify-center py-3 bg-white border-r-2 border-gray-300">
-                  <span className="text-[13px] font-bold text-gray-400">{hour}</span>
+                <div className="flex items-center justify-center py-3 bg-white border-r border-slate-200">
+                  <span className="text-[12px] font-bold text-slate-400 font-mono">{hour}</span>
                 </div>
 
                 {/* Cells */}

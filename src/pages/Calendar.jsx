@@ -69,29 +69,29 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-emerald-50/40">
+    <div className="min-h-screen bg-[#fafbfc] font-[Inter] antialiased text-slate-900 selection:bg-emerald-600 selection:text-white">
 
       {/* Navbar */}
-      <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[13px] font-medium text-gray-500 hover:bg-gray-50 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-slate-200 text-[13px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer"
             >
               <ArrowLeft size={15} />
               Geri
             </button>
             <div className="flex items-center gap-2.5">
               {clinic?.logo_url ? (
-                <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs border border-gray-100" />
+                <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs border border-slate-200" />
               ) : (
-                <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center shadow-xs text-white shrink-0 font-black text-[13px] tracking-tight">
+                <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-white shrink-0 font-black text-[13px] tracking-tight">
                   FT
                 </div>
               )}
               <div>
-                <span className="text-[14px] font-bold text-gray-900 block leading-tight">{clinicName}</span>
+                <span className="text-[14px] font-bold text-slate-900 block leading-tight">{clinicName}</span>
                 <span className="text-[9px] text-slate-500 font-semibold uppercase tracking-wider block leading-tight">ONLINE RANDEVU SİSTEMİ</span>
               </div>
             </div>
@@ -99,15 +99,15 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowLookup(true)}
-              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-teal-200 bg-teal-50/80 text-teal-800 text-[12px] font-bold hover:bg-teal-100 transition-all cursor-pointer shadow-2xs"
+              className="flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-[12px] font-semibold transition-all cursor-pointer shadow-2xs"
             >
-              <Clock size={14} className="text-teal-600" />
+              <Clock size={14} className="text-slate-600" />
               <span>Randevu Durumu Sorgula</span>
             </button>
             <button
               onClick={() => fetchData(true)}
               disabled={refreshing}
-              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[12px] font-medium text-slate-600 transition-all disabled:opacity-50 cursor-pointer shadow-2xs"
             >
               <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">Yenile</span>
@@ -117,26 +117,25 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
       </nav>
 
       {/* Page Header & Therapist Filter */}
-      <section className="max-w-6xl mx-auto px-4 pt-8 pb-4">
+      <section className="max-w-6xl mx-auto px-4 pt-8 pb-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Randevu Takvimi</h1>
-            <p className="text-[13px] text-gray-500">
-              <span className="text-emerald-600 font-semibold">Yeşil</span> alanlara tıklayarak randevu talep edin.
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1">Haftalık Seans Takvimi</h1>
+            <p className="text-[13px] text-slate-500">
+              Müsait yeşil kutulara tıklayarak 1 dakikada adınıza randevu talebi oluşturun.
             </p>
           </div>
 
           {/* Therapist Selection Selector */}
           {staff.length > 0 && (
-            <div className="flex items-center gap-2 bg-white p-1.5 px-3 rounded-2xl border border-gray-200/80 shadow-2xs">
-              <Stethoscope size={15} className="text-teal-600" />
-              <label className="text-[12px] font-semibold text-gray-700 whitespace-nowrap">Fizyoterapist:</label>
+            <div className="flex items-center gap-2.5 bg-white p-2 px-3.5 rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-[12px] font-semibold text-slate-500 whitespace-nowrap">Terapist:</span>
               <select
                 value={selectedTherapistId}
                 onChange={(e) => setSelectedTherapistId(e.target.value)}
-                className="text-[12px] font-semibold text-gray-900 bg-transparent outline-none cursor-pointer"
+                className="text-[12px] font-bold text-slate-900 bg-transparent outline-none cursor-pointer pr-2"
               >
-                <option value="all">Fark Etmez / Tüm Terapistler</option>
+                <option value="all">Fark Etmez / Tüm Uzmanlar</option>
                 {staff.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.full_name} ({s.title || 'Fzt.'})
