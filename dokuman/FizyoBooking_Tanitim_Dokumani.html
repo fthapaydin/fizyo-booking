@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Fizyotim Online Randevu & Klinik Keşif Platformu (fizyo-booking) | Tanıtım Dokümanı</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --g:#059669; --gd:#064e3b; --ink:#0f172a; --mut:#64748b; --bg:#f0fdf4; }
+  body { font-family: 'Segoe UI', Inter, Arial, sans-serif; color: var(--ink); line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; padding: 14mm 15mm 13mm; page-break-after: always; position: relative; overflow: hidden; }
+  .page:last-child { page-break-after: auto; }
+  .eyebrow { font-size: 8.5pt; letter-spacing: .14em; font-weight: 800; color: var(--g); text-transform: uppercase; }
+  h1 { font-size: 31pt; line-height: 1.12; font-weight: 800; letter-spacing: -.02em; }
+  h2 { font-size: 18.5pt; font-weight: 800; letter-spacing: -.01em; margin: 2mm 0 3mm; }
+  h3 { font-size: 11.5pt; font-weight: 700; margin-bottom: 1.2mm; }
+  p { font-size: 10pt; color: #334155; }
+  .lead { font-size: 11.5pt; color: #334155; }
+  .footer { position: absolute; left: 15mm; right: 15mm; bottom: 7mm; font-size: 8pt; color: var(--mut); display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 2mm; }
+  .cover { background: linear-gradient(155deg, #0f172a 0%, #064e3b 65%, #059669 125%); color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+  .cover p { color: #d1fae5; }
+  .logo { display:flex; align-items:center; gap:3mm; font-weight:800; font-size:16pt; }
+  .logo b { background:#fff; color:var(--ink); width:11mm; height:11mm; border-radius:3mm; display:flex; align-items:center; justify-content:center; font-size:13pt; }
+  .cover .tag { display:inline-block; border:1px solid rgba(255,255,255,.35); border-radius:99px; padding:1.5mm 4mm; font-size:9pt; color:#d1fae5; margin-bottom:5mm; }
+  .cover .shot { border-radius: 4mm; box-shadow: 0 10mm 25mm rgba(0,0,0,.45); width: 100%; display:block; }
+  .shotbox { border: 1px solid #e2e8f0; border-radius: 3mm; overflow: hidden; box-shadow: 0 2.5mm 7mm rgba(15,23,42,.09); background:#fff; }
+  .shotbox img { width: 100%; display: block; }
+  .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 4.5mm; }
+  .grid3 { display:grid; grid-template-columns: repeat(3,1fr); gap: 3.8mm; }
+  .card { background: var(--bg); border: 1px solid #bbf7d0; border-radius: 3mm; padding: 3.8mm; }
+  .card.w { background:#fff; border-color:#e2e8f0; }
+  .card.dark { background:#0f172a; border-color:#1e293b; color:#fff; }
+  .card.dark p { color:#cbd5e1; }
+  .card p { font-size: 9.2pt; }
+  .stat { text-align:center; padding:3.5mm; border-radius:3mm; background:#fff; border:1px solid #e2e8f0; }
+  .stat b { display:block; font-size:18pt; color:var(--g); }
+  .stat span { font-size:8.5pt; color:var(--mut); }
+  ul.chk { list-style:none; margin-top:1.5mm; }
+  ul.chk li { font-size:9.8pt; padding-left:5.5mm; position:relative; margin-bottom:1.4mm; color:#334155; }
+  ul.chk li::before { content:'✓'; position:absolute; left:0; color:var(--g); font-weight:800; }
+  .caption { font-size:8pt; color:var(--mut); margin-top:1.2mm; text-align:center; }
+  .price { border:2px solid #e2e8f0; border-radius:4mm; padding:5.5mm; }
+  .price.hl { background:#0f172a; color:#fff; border-color:#0f172a; }
+  .price.hl p, .price.hl li { color:#cbd5e1 !important; }
+  .price .amt { font-size:26pt; font-weight:800; }
+  .price .amt small { font-size:9.5pt; font-weight:600; opacity:.8; }
+  .badge { display:inline-block; font-size:7.5pt; font-weight:700; background:#10b981; color:#fff; padding:.8mm 3mm; border-radius:99px; margin-bottom:2mm; }
+  table { width:100%; border-collapse:collapse; font-size:9pt; margin-top:2mm; }
+  td, th { border-bottom:1px solid #e2e8f0; padding:2mm 2.2mm; text-align:left; vertical-align:top; }
+  th { color:var(--mut); font-size:8pt; text-transform:uppercase; letter-spacing:.05em; background:#f8fafc; font-weight:700; }
+  .flow { display:grid; grid-template-columns: 1fr 26mm 1fr; align-items:center; gap:2mm; margin:4mm 0; }
+  .flow-mid { text-align:center; font-size:8pt; font-weight:700; color:var(--g); background:#ecfdf5; border:1px dashed #6ee7b7; border-radius:2.5mm; padding:2.5mm 1mm; }
+</style>
+</head>
+<body>
+
+<!-- 1. KAPAK -->
+<section class="page cover">
+  <div class="logo"><b>FT</b> Fizyotim · Online Randevu &amp; Keşif Platformu</div>
+  <div>
+    <span class="tag">fizyo-booking · Klinik Yönetim Sistemi ile Paralel Çalışan Danışan Arayüzü</span>
+    <h1>Danışanlarınız 7/24<br>müsait saatleri görsün,<br>randevusunu anında alsın.</h1>
+    <p class="lead" style="margin-top:5mm; max-width:148mm;">Telefon trafiğini ortadan kaldıran, Klinik Yönetim Paneli (rezervasyon_app) ile aynı veritabanı üzerinde gerçek zamanlı ve çift yönlü çalışan online randevu, paket sorgulama ve klinik keşif platformu.</p>
+  </div>
+  <img class="shot" src="ekran/fb-05-canli-takvim.png" alt="Canlı Seans Takvimi">
+  <div style="display:flex; justify-content:space-between; font-size:9pt; color:#a7f3d0;"><span>fizyo-booking · Sistem &amp; Pazarlama Dokümanı</span><span>Çift Yönlü Canlı Senkronizasyon</span></div>
+</section>
+
+<!-- 2. PARALEL ÇALIŞMA MİMARİSİ -->
+<section class="page">
+  <div class="eyebrow">01 · Paralel Ekosistem Mimarisi</div>
+  <h2>Klinik Yönetim Paneli ile saniyesi saniyesine senkron</h2>
+  <p class="lead"><b>fizyo-booking</b>, bağımsız bir form sayfası değildir; <b>rezervasyon_app (Klinik Yönetim Paneli)</b> ile aynı bulut veritabanını paylaşan, anlık veri alışverişi yapan bütünleşik bir danışan portalıdır.</p>
+  <div class="flow">
+    <div class="card">
+      <h3 style="color:#065f46;">Danışan Tarafı (fizyo-booking)</h3>
+      <p>Müsait saatleri görür, uzman seçer, kayıtlı telefonuyla 1 dakikada randevu talebi gönderir ve kalan paket seanslarını sorgular.</p>
+    </div>
+    <div class="flow-mid">⚡ Gerçek Zamanlı<br><span style="font-size:7pt; color:#047857;">Ortak Bulut DB</span><br>↔</div>
+    <div class="card dark">
+      <h3 style="color:#6ee7b7;">Klinik Tarafı (rezervasyon_app)</h3>
+      <p>Takvimi, mesai/mola saatlerini, uzmanları ve paketleri yönetir. Gelen talepleri tek tıkla onaylayıp seansa dönüştürür.</p>
+    </div>
+  </div>
+  <h3>İki Sistem Arasındaki Canlı Veri Akışı</h3>
+  <table>
+    <thead>
+      <tr><th>Klinik Yönetim Panelinde Yapılan İşlem</th><th>fizyo-booking (Danışan Ekranı) Üzerindeki Anlık Etkisi</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><b>Yeni Seans / Paket Randevusu Ekleme</b></td><td>İlgili gün ve saat kutusu danışan ekranında anında <b>DOLU</b> olarak kilitlenir; çakışma imkânsız hale gelir.</td></tr>
+      <tr><td><b>Mesai Saati &amp; Öğle Molası Güncelleme</b></td><td>Açılış-kapanış saatleri takvime yansır; mola saatleri seçilemez kilitli satır olarak korunur.</td></tr>
+      <tr><td><b>Tedavi, Süre, Fiyat &amp; Uzman Tanımlama</b></td><td>Danışan randevu penceresinde güncel hizmet listesini, süresini, ücretini ve sadece o hizmete atanmış uzmanları görür.</td></tr>
+      <tr><td><b>Seansı "Tamamlandı" İşaretleme</b></td><td>Danışan <b>Randevu Durumu Sorgula</b> ekranında tamamlanan ve kalan seans sayısını (% ilerleme çubuğuyla) güncel görür.</td></tr>
+      <tr><td><b>Randevu Talebini Onaylama / Reddetme</b></td><td>Talep durumu "Onaylandı" (takvimde Dolu) veya red nedeni ile birlikte danışan sorgulama ekranına düşer.</td></tr>
+    </tbody>
+  </table>
+  <div class="grid2" style="margin-top:4mm;">
+    <div>
+      <div class="shotbox"><img src="ekran/fb-11-yonetim-takvim.png"></div>
+      <p class="caption"><b>1. Klinik Paneli (rezervasyon_app):</b> Uzmanların 31 Ağu – 6 Eyl takvimi</p>
+    </div>
+    <div>
+      <div class="shotbox"><img src="ekran/fb-05-canli-takvim.png"></div>
+      <p class="caption"><b>2. Danışan Ekranı (fizyo-booking):</b> Aynı saatler otomatik "DOLU" görünür</p>
+    </div>
+  </div>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>2</span></div>
+</section>
+
+<!-- 3. ÇİFT MODLU ÇALIŞMA: KEŞİF VİTRİNİ & KLİNİĞE ÖZEL PORTAL -->
+<section class="page">
+  <div class="eyebrow">02 · Çift Modlu Kullanım Yapısı</div>
+  <h2>İster 81 ilde klinik keşif rehberi, ister işletmenize özel randevu sayfası</h2>
+  <p><b>fizyo-booking</b> iki farklı çalışma modunu tek çatı altında sunar: genel ziyaretçiler için <b>81 İl Klinik Keşif &amp; Tanıtım Platformu</b> ve doğrudan işletme bağlantısıyla (<code>?clinic=klinik-adiniz</code>) giren danışanlar için <b>Kliniğe Özel Canlı Randevu Sayfası</b>.</p>
+  <div class="shotbox" style="margin-top:4mm;"><img src="ekran/fb-01-kesif-hero.png"></div>
+  <p class="caption">Genel Keşif Vitrin Ekranı — 81 ilde hızlı şehir seçimi, istatistik barı ve klinik arama geçişi</p>
+  <div class="shotbox" style="margin-top:4.5mm;"><img src="ekran/fb-02-isleyis.png"></div>
+  <p class="caption">3 Adımda Randevu İşleyişi — 01 Şehir &amp; Klinik Seçin · 02 Canlı Takvimden Saat Seçin · 03 Anında Onay</p>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>3</span></div>
+</section>
+
+<!-- 4. UZMANLIK VİTRİNİ & ŞEHİR/İLÇE BAZLI KLİNİK ARAMA -->
+<section class="page">
+  <div class="eyebrow">03 · Uzmanlık Vitrini &amp; Akıllı Klinik Rehberi</div>
+  <h2>Tedavi alanına veya şehir/ilçeye göre anında filtreleme</h2>
+  <p>Danışanlar ilgilendikleri uzmanlık kartına tıklayarak o alanda hizmet veren merkezleri filtreleyebilir veya 81 il ve ilçe seçimiyle aradıkları kliniğe saniyeler içinde ulaşabilir.</p>
+  <div class="shotbox" style="margin-top:3.5mm;"><img src="ekran/fb-03-tedavi-vitrini.png"></div>
+  <p class="caption">Kliniklerin Sunduğu Uzmanlıklar — tıklanabilir kategori kartları ve etiketler</p>
+  <div class="shotbox" style="margin-top:4.5mm;"><img src="ekran/fb-04-klinik-arama.png"></div>
+  <p class="caption">Şehir &amp; İlçe Seçerek Klinik Bul — A-Z alfabetik listeleme, aktif klinik kartları ve "Müsait Saatleri Gör &amp; Randevu Al" butonu</p>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>4</span></div>
+</section>
+
+<!-- 5. CANLI HAFTALIK SEANS TAKVİMİ -->
+<section class="page">
+  <div class="eyebrow">04 · Canlı Haftalık Seans Takvimi</div>
+  <h2>Müsait ve dolu saatler gerçek zamanlı olarak ekranda</h2>
+  <p>Danışan kliniğinizi seçtiğinde veya doğrudan size özel bağlantıya (QR kod / sosyal medya linki) tıkladığında <b>Haftalık Seans Takvimi</b> açılır. Her 30 saniyede bir otomatik güncellenen takvimde yeşil <b>MÜSAİT</b> kutulara tıklanarak randevu süreci başlatılır.</p>
+  <div class="shotbox" style="margin-top:4.5mm;"><img src="ekran/fb-05-canli-takvim.png"></div>
+  <p class="caption">Canlı Haftalık Seans Takvimi — Müsait (Yeşil), Onay Bekliyor (Turuncu), Dolu (Pembe) ve Kapalı gün görünümleri</p>
+  <div class="grid3" style="margin-top:5mm;">
+    <div class="card">
+      <h3>👨‍⚕️ Uzman / Terapist Filtresi</h3>
+      <p>Danışan sağ üstteki seçim kutusundan "Fark Etmez / Tüm Uzmanlar" diyebilir veya kendi uzmanını seçip sadece onun müsaitliğini görebilir.</p>
+    </div>
+    <div class="card">
+      <h3>🛑 Otomatik Mola &amp; Mesai Koruması</h3>
+      <p>Klinik Ayarları'nda tanımladığınız öğle arası (ör. 12:00) ve kapalı günler (ör. Pazar) danışan ekranında otomatik olarak seçime kapatılır.</p>
+    </div>
+    <div class="card">
+      <h3>🔄 Canlı Yenileme &amp; Offline Uyarı</h3>
+      <p>Takvim arka planda otomatik senkronize olur; internet bağlantısı koptuğunda danışanı uyaran çevrimdışı koruma bandı devreye girer.</p>
+    </div>
+  </div>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>5</span></div>
+</section>
+
+<!-- 6. AKILLI RANDEVU TALEBİ OLUŞTURMA MODALI -->
+<section class="page">
+  <div class="eyebrow">05 · Akıllı Randevu Talebi &amp; Suistimal Koruması</div>
+  <h2>Kayıtlı telefonla otomatik tanıma ve 5 katmanlı kota kontrolü</h2>
+  <p>Danışan müsait bir saate tıkladığında açılan <b>Randevu Talebi Oluştur</b> penceresi, hem danışan için en hızlı deneyimi sunar hem de takviminizi sahte/mükerrer taleplere karşı korur.</p>
+  <div class="grid2" style="margin-top:4mm; align-items:center;">
+    <div class="shotbox" style="aspect-ratio:1/1.38; overflow:hidden; max-width:74%; margin:0 auto;"><img src="ekran/fb-06-randevu-modal.png" style="width:270%; max-width:none; margin-left:-85%; margin-top:-6%;"></div>
+    <div>
+      <h3>Adım Adım Akıllı Form</h3>
+      <ul class="chk">
+        <li><b>Otomatik Hasta Tanıma:</b> Danışan 11 haneli kayıtlı cep telefonunu girdiğinde sistem <code>patients</code> tablosundan kaydı otomatik bulur; tekrar isim yazdırmaz.</li>
+        <li><b>Tedavi &amp; Uzman Eşleşmesi:</b> Hizmet seçildiğinde süresi ve fiyatı görünür; sadece o hizmeti uygulayan uzmanlar listelenir.</li>
+        <li><b>Hizmet Yeri Tercihi:</b> Danışan randevusunu <b>Klinikte</b>, <b>Evde</b> veya <b>Uzaktan</b> olarak talep edebilir.</li>
+        <li><b>Hızlı Şikayet Etiketleri:</b> Bel/Fıtık, Boyun Ağrısı, Diz &amp; Menisküs, Postür &amp; Skolyoz gibi hazır etiketlerle tek tıkla ön bilgi eklenir.</li>
+      </ul>
+    </div>
+  </div>
+  <h3 style="margin-top:5.5mm;">Takviminizi Koruyan 5 Katmanlı Güvenlik Kuralı</h3>
+  <div class="grid3" style="margin-top:2mm;">
+    <div class="card w"><h3>1. Kayıtlı Danışan Doğrulaması</h3><p>Sistemde kaydı olmayan yabancı telefon numaraları takvimi rastgele dolduramaz.</p></div>
+    <div class="card w"><h3>2. Bekleyen Talep Limiti (Maks. 2)</h3><p>Onay bekleyen 2 talebi olan danışan, klinik değerlendirmeden yeni talep açamaz.</p></div>
+    <div class="card w"><h3>3. Haftalık Seans Kotası (Maks. 2)</h3><p>Aynı hafta içinde en fazla 2 seans/talep sınırı ile takvim blokajı önlenir.</p></div>
+  </div>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>6</span></div>
+</section>
+
+<!-- 7. KVKK KORUMALI RANDEVU & PAKET SORGULAMA -->
+<section class="page">
+  <div class="eyebrow">06 · KVKK Korumalı Randevu &amp; Paket Sorgulama</div>
+  <h2>"Kaç seansım kaldı?" sorusuna 7/24 self-servis yanıt</h2>
+  <p>Danışanlar üst menüdeki <b>Randevu Durumu Sorgula</b> butonuna tıklayıp telefon numaralarını girerek kendi paket ilerlemelerini ve geçmiş/gelecek tüm randevularını saniyeler içinde görüntüleyebilir.</p>
+  <div class="grid2" style="margin-top:4.5mm; align-items:center;">
+    <div class="shotbox" style="aspect-ratio:1/1.28; overflow:hidden; max-width:74%; margin:0 auto;"><img src="ekran/fb-07-sorgulama-modal.png" style="width:270%; max-width:none; margin-left:-85%; margin-top:-10%;"></div>
+    <div>
+      <h3>Sorgulama Ekranı Özellikleri</h3>
+      <ul class="chk">
+        <li><b>KVKK Kişisel Veri Maskeleme:</b> Danışan adı (<code>Sayın Ze**** De***</code>), tedavi adı ve uzman bilgisi 6698 sayılı KVKK kapsamında otomatik yıldızlanarak maskelenir.</li>
+        <li><b>4'lü Seans Paket Özeti:</b> <b>Toplam Paket</b>, <b>Tamamlanan</b>, <b>Kalan (Kullanılabilir)</b> ve <b>Bekleyen (Planlanan)</b> seans sayıları net kutularda gösterilir.</li>
+        <li><b>Yüzdesel Tamamlanma Çubuğu:</b> Paket ilerleme oranı (ör. <code>%30</code>) görsel çubukla sunulur; paket bittiğinde yenileme bilgilendirmesi çıkar.</li>
+        <li><b>Randevu &amp; Talep Geçmişi:</b> Onaylanan, tamamlanan, bekleyen ve reddedilen (red sebebiyle birlikte) tüm kayıtlar listelenir.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:6mm;">
+    <h3>💡 İşletmeniz İçin Operasyonel Kazanç</h3>
+    <p>Danışma ve sekreterya ekibinizin gün içinde en çok vakit kaybettiği <i>"Randevum onaylandı mı?", "Bu hafta hangi gün gelecektim?", "Paketimde kaç seans kaldı?"</i> telefonlarını tamamen self-servis hale getirir.</p>
+  </div>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>7</span></div>
+</section>
+
+<!-- 8. YÖNETİM PANELİ İLE UÇTAN UCA AKIŞ -->
+<section class="page">
+  <div class="eyebrow">07 · Uçtan Uca Randevu Yaşam Döngüsü</div>
+  <h2>Danışan talebinden klinik onayına 4 adımlı senkron akış</h2>
+  <p><b>fizyo-booking</b> üzerinde başlayan bir randevu talebinin <b>rezervasyon_app</b> yönetim panelinde nasıl sonuçlandığını gösteren uçtan uca çalışma diyagramı:</p>
+  <div class="grid2" style="margin-top:4.5mm;">
+    <div>
+      <div class="shotbox"><img src="ekran/fb-09-yonetim-dashboard.png"></div>
+      <p class="caption"><b>Adım A (Klinik Dashboard):</b> Yeni talep anında sesli bildirimle panele düşer</p>
+    </div>
+    <div>
+      <div class="shotbox"><img src="ekran/fb-10-yonetim-talepler.png"></div>
+      <p class="caption"><b>Adım B (Randevu Talepleri):</b> Yönetici/sekreter tek tıkla talebi onaylar</p>
+    </div>
+  </div>
+  <h2 style="margin-top:5.5mm;">Kurumsal klinik altbilgi (Footer) ve güven rozetleri</h2>
+  <div class="shotbox" style="margin-top:3mm;"><img src="ekran/fb-08-kurumsal-footer.png"></div>
+  <p class="caption">Kliniğe özel kurumsal altbilgi — KVKK &amp; 256-Bit SSL güven barı, hizmet alanları, açık adres ve çalışma saatleri</p>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>8</span></div>
+</section>
+
+<!-- 9. FİYATLANDIRMA & İLETİŞİM -->
+<section class="page">
+  <div class="eyebrow">Paketler &amp; İletişim</div>
+  <h2>Klinik Yönetim Paneli + Online Randevu Platformu tek pakette</h2>
+  <p><b>fizyo-booking</b> online randevu ve keşif platformu için ayrı bir ücret ödemezsiniz; seçtiğiniz pakete <b>Klinik Yönetim Paneli (rezervasyon_app)</b> ve <b>Online Randevu Platformu (fizyo-booking)</b> birlikte dahildir.</p>
+  <div class="grid2" style="margin-top:5mm;">
+    <div class="price">
+      <h3>Standart Paket</h3><p>Aylık esnek abonelik planı</p>
+      <div class="amt" style="margin:3mm 0;">₺250 <small>/ ay (KDV Dahil)</small></div>
+      <ul class="chk">
+        <li>Klinik Yönetim Paneli + Online Randevu Sitesi</li>
+        <li>81 İl Klinik Rehberi &amp; Kliniğe Özel Randevu Linki</li>
+        <li>KVKK Korumalı Seans &amp; Paket Sorgulama Ekranı</li>
+        <li>Dinamik Takvim, Mola &amp; Kota Koruması</li>
+        <li>Kurumsal PDF Raporlar &amp; Tahsilat Makbuzu</li>
+        <li>Danışma Masası QR Stand Üretici</li>
+      </ul>
+    </div>
+    <div class="price hl">
+      <span class="badge">%33 TASARRUF · 4 AY ÜCRETSİZ</span>
+      <h3>Yıllık Avantaj Paketi</h3><p>Uzun vadeli, en avantajlı maliyet (Aylık ~₺166)</p>
+      <div class="amt" style="margin:3mm 0;">₺2.000 <small>/ yıl (KDV Dahil)</small></div>
+      <ul class="chk">
+        <li><b>Tüm Standart Paket Özellikleri Dahil</b></li>
+        <li>Yıllık Peşin Ödemede <b>4 Ay Ücretsiz Kullanım</b></li>
+        <li>Ücretsiz Eski Hasta &amp; Randevu Veri Aktarımı</li>
+        <li>1 Yıl Boyunca Fiyat Artışından Etkilenmeme Güvencesi</li>
+        <li>Kliniğinize Özel QR Masa Standı Tasarım Desteği</li>
+        <li>Öncelikli Teknik Destek</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:8mm; background:#052e22; color:#fff; border:none; text-align:center; padding:7mm;">
+    <h3 style="color:#fff; font-size:15pt;">14 Gün Ücretsiz Demo &amp; Kurumsal İletişim</h3>
+    <p style="color:#d1fae5; margin-top:2mm; font-size:10.5pt;">İşletmenize özel yönetim panelini ve paralel çalışan online randevu sayfasını hemen test etmek için bize ulaşın:</p>
+    <p style="color:#6ee7b7; margin-top:3mm; font-size:12pt; font-weight:700;">E-posta: fatalsoft.inc@gmail.com</p>
+    <p style="color:#a7f3d0; margin-top:2mm; font-size:9pt;">FatalSoft Bilişim Teknolojileri · Kocaeli / Gebze</p>
+  </div>
+  <div class="footer"><span>fizyo-booking · Online Randevu &amp; Klinik Keşif Platformu</span><span>9</span></div>
+</section>
+
+</body>
+</html>
