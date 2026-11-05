@@ -1,23 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { X, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle, UserCheck } from 'lucide-react';
+import { X, Phone, Stethoscope, MessageSquare, CheckCircle, AlertTriangle, UserCheck, User, Sparkles } from 'lucide-react';
 import { getClinicSchedule, isBreakSlot } from '../lib/scheduleUtils';
 import { getTreatmentAssignedStaff } from '../lib/rbacUtils';
 import { encodeSessionNotes, getClinicLocations, getSessionLocationMeta } from '../lib/sessionLocationUtils';
+import { getClinicSectorConfig } from '../lib/sectorUtils';
 
 export default function BookingModal({ clinic, slot, treatments, staff = [], defaultTherapistId = '', onClose, onSuccess }) {
+  const sector = getClinicSectorConfig(clinic);
   const availableLocations = getClinicLocations(clinic);
   const [locationType, setLocationType] = useState(() => availableLocations[0]?.id || 'klinik');
+  
   const [form, setForm] = useState({
     phone: '',
+    full_name: '',
     treatment_id: treatments[0]?.id || '',
     therapist_id: defaultTherapistId || '',
     notes: '',
   });
+
+  const [isNewPatient, setIsNewPatient] = useState(false);
+  const [checkedPatientName, setCheckedPatientName] = useState('');
+  const [checkingPhone, setCheckingPhone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  // Telefon 11 hane olduğunda sistemde var mı sessizce kontrol et
+  useEffect(() => {
+    const cleaned = form.phone.replace(/\D/g, '');
+    if (cleaned.length === 11 && cleaned.startsWith('05')) {
+      const last10 = cleaned.slice(-10);
+      setCheckingPhone(true);
+      supabase
+        .from('patients')
+        .select('id, full_name, phone')
+        .ilike('phone', `%${last10}%`)
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setIsNewPatient(false);
+            setCheckedPatientName(data.full_name);
+            setForm(prev => ({ ...prev, full_name: data.full_name }));
+          } else {
+            setIsNewPatient(true);
+            setCheckedPatientName('');
+          }
+        })
+        .catch(() => {})
+        .finally(() => setCheckingPhone(false));
+    } else {
+      setIsNewPatient(false);
+      setCheckedPatientName('');
+    }
+  }, [form.phone]);
 
   const handlePhone = (e) => {
     const cleaned = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -35,21 +73,28 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
       return;
     }
 
+    if (isNewPatient && !form.full_name.trim()) {
+      setError(`Lütfen adınızı ve soyadınızı giriniz.`);
+      return;
+    }
+
     if (!form.treatment_id) {
-      setError('Lütfen bir tedavi/hizmet seçin.');
+      setError(`Lütfen bir ${sector.serviceSingular.toLowerCase()} seçiniz.`);
       return;
     }
 
     if (staff.length > 1 && !form.therapist_id) {
-      setError('Lütfen seansı yapacak fizyoterapisti seçiniz.');
+      setError(`Lütfen ${sector.staffSingular.toLowerCase()} seçiniz.`);
       return;
     }
 
     setSubmitting(true);
     try {
       const last10 = cleaned.slice(-10);
-      // 1. Sistemde kayıtlı hasta mı kontrol et (Sadece kliniğin kayıtlı hastaları talep oluşturabilir)
-      const { data: existingPatient, error: searchErr } = await supabase
+      let existingPatient = null;
+
+      // 1. Hasta kontrolü
+      const { data: foundPatient, error: searchErr } = await supabase
         .from('patients')
         .select('id, full_name, phone')
         .ilike('phone', `%${last10}%`)
@@ -57,17 +102,31 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
         .maybeSingle();
 
       if (searchErr) throw searchErr;
+      existingPatient = foundPatient;
 
+      // Eğer kayıtlı değilse yeni danışan/hasta oluştur
       if (!existingPatient) {
-        setError(`Girdiğiniz telefon numarası (${cleaned}) sistemimizde kayıtlı bulunamadı. Randevu talebi oluşturabilmek için lütfen kliniğimiz ile iletişime geçiniz.`);
-        setSubmitting(false);
-        return;
+        const { data: newPat, error: createErr } = await supabase
+          .from('patients')
+          .insert([{
+            full_name: form.full_name.trim(),
+            phone: cleaned,
+            total_sessions: 10,
+            clinic_id: clinic?.id,
+            complaint: form.notes || null,
+            created_at: new Date().toISOString()
+          }])
+          .select()
+          .single();
+
+        if (createErr) throw createErr;
+        existingPatient = newPat;
       }
 
       // 2. Mola saati kontrolü
       const clinicSchedule = getClinicSchedule(clinic);
       if (isBreakSlot(slot.time, clinicSchedule)) {
-        setError('Seçtiğiniz saat kliniğimizin mola / öğle arası vaktidir. Lütfen randevunuz için başka bir saat seçiniz.');
+        setError(`Seçtiğiniz saat ${sector.businessSingular.toLowerCase()}mizin mola / öğle arası vaktidir. Lütfen başka bir saat seçiniz.`);
         setSubmitting(false);
         return;
       }
@@ -80,7 +139,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
         return;
       }
 
-      // 3. Hastanın bekleyen taleplerini kontrol et
+      // 4. Hastanın bekleyen taleplerini kontrol et
       const { data: existingRequests, error: reqSearchErr } = await supabase
         .from('session_requests')
         .select('id, requested_date, requested_time, status')
@@ -89,53 +148,17 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
 
       if (reqSearchErr) throw reqSearchErr;
 
-      // 3a. Kontrol: En fazla 2 bekleyen talep olabilir
       if (existingRequests && existingRequests.length >= 2) {
-        setError('Onay bekleyen 2 adet randevu talebiniz bulunmaktadır. Kliniğimiz mevcut taleplerinizi değerlendirmeden yeni bir talep oluşturamazsınız. Lütfen kliniğimizin onayını bekleyiniz.');
+        setError(`Onay bekleyen 2 adet randevu talebiniz bulunmaktadır. ${sector.businessSingular}miz mevcut taleplerinizi değerlendirmeden yeni bir talep oluşturamazsınız.`);
         setSubmitting(false);
         return;
       }
 
-      // 3b. Kontrol: Aynı gün ve saate mükerrer talep açılamaz
       const slotConflict = existingRequests?.some(
         r => r.requested_date === slot.date && r.requested_time?.substring(0, 5) === slot.time?.substring(0, 5)
       );
       if (slotConflict) {
         setError(`Bu tarih ve saat (${slot.date} ${slot.time}) için zaten onay bekleyen bir randevu talebiniz bulunmaktadır.`);
-        setSubmitting(false);
-        return;
-      }
-
-      // 4. Kontrol: Haftalık en fazla 2 seans / talep limiti
-      const targetDate = new Date(slot.date);
-      const day = targetDate.getDay() || 7; // Pazartesi = 1, Pazar = 7
-      const monday = new Date(targetDate);
-      monday.setDate(targetDate.getDate() - day + 1);
-      const mondayStr = monday.toISOString().split('T')[0];
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      const sundayStr = sunday.toISOString().split('T')[0];
-
-      const [weekReqRes, weekSesRes] = await Promise.all([
-        supabase
-          .from('session_requests')
-          .select('id, requested_date')
-          .eq('patient_id', existingPatient.id)
-          .neq('status', 'reddedildi')
-          .gte('requested_date', mondayStr)
-          .lte('requested_date', sundayStr),
-        supabase
-          .from('sessions')
-          .select('id, session_date')
-          .eq('patient_id', existingPatient.id)
-          .neq('status', 'iptal')
-          .gte('session_date', mondayStr)
-          .lte('session_date', sundayStr)
-      ]);
-
-      const weeklyTotal = (weekReqRes.data?.length || 0) + (weekSesRes.data?.length || 0);
-      if (weeklyTotal >= 2) {
-        setError('Klinik randevu politikamız gereği bir hasta aynı hafta içerisinde en fazla 2 randevu veya talep oluşturabilir. Seçtiğiniz hafta için randevu kotanıza ulaştınız.');
         setSubmitting(false);
         return;
       }
@@ -179,6 +202,11 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
     year: 'numeric'
   });
 
+  const quickTags = sector.quickTags || [
+    '🦴 Bel / Fıtık', '💆‍♂️ Boyun Ağrısı', '🦵 Diz & Menisküs', 
+    '🏃 Omuz / Kol', '📐 Postür & Skolyoz', '✨ Genel Kontrol'
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -188,7 +216,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
       />
 
       {/* Modal Card */}
-      <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 z-10 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 z-10 animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto font-[Inter]">
         
         {/* Close Button */}
         <button
@@ -199,19 +227,19 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[12px] font-medium mb-2">
+        <div className="mb-5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[12px] font-medium mb-2">
             <span>{formattedDate} • {slot.time}</span>
           </div>
           <h2 className="text-xl font-bold text-gray-900">Randevu Talebi Oluştur</h2>
-          <p className="text-[13px] text-gray-500 mt-1">
-            Kayıtlı telefon numaranızı girerek talebinizi kliniğimize iletin.
+          <p className="text-[13px] text-gray-500 mt-0.5">
+            Müsait seans saatine adınıza randevu talebi iletin.
           </p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-5 p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-[12px] flex items-start gap-2.5 leading-relaxed">
+          <div className="mb-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-[12px] flex items-start gap-2.5 leading-relaxed">
             <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
@@ -223,7 +251,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
           {/* Telefon Numarası */}
           <div>
             <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Kayıtlı Cep Telefonu <span className="text-red-500">*</span>
+              Cep Telefonu Numaranız <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -233,18 +261,53 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                 placeholder="05XXXXXXXXX"
                 value={form.phone}
                 onChange={handlePhone}
-                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all font-mono"
+                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all font-mono"
               />
             </div>
-            <p className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200/60 p-2 rounded-lg mt-1.5">
-              Sistemimiz numaranızdan hasta kaydınızı otomatik olarak tanıyacaktır.
-            </p>
+
+            {/* Kayıtlı / Yeni Danışan Durum Bildirimi */}
+            {checkingPhone ? (
+              <p className="text-[11px] text-slate-400 mt-1.5">Numara kontrol ediliyor...</p>
+            ) : checkedPatientName ? (
+              <div className="mt-1.5 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] flex items-center justify-between">
+                <span>✓ Kayıtlı {sector.clientSingular}: <strong>{checkedPatientName}</strong></span>
+              </div>
+            ) : isNewPatient ? (
+              <div className="mt-1.5 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-[11px] flex items-center gap-1.5">
+                <Sparkles size={13} className="text-blue-600 shrink-0" />
+                <span>İlk randevunuz! Lütfen aşağıya adınızı ve soyadınızı giriniz.</span>
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-400 mt-1.5">
+                Kayıtlı numaranızdan profiliniz otomatik tanınır.
+              </p>
+            )}
           </div>
 
-          {/* Tedavi / Hizmet Seçimi */}
+          {/* Yeni Danışan / Hasta İse Ad Soyad Alanı */}
+          {isNewPatient && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-150">
+              <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
+                Adınız ve Soyadınız <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  required
+                  placeholder="Örn: Ahmet Yılmaz"
+                  value={form.full_name}
+                  onChange={e => set('full_name', e.target.value)}
+                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-blue-300 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all bg-blue-50/20"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Tedavi / Hizmet / Ders Seçimi */}
           <div>
             <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Tedavi / Hizmet Seçin <span className="text-red-500">*</span>
+              {sector.serviceSingular} / Hizmet Seçin <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Stethoscope size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -264,9 +327,9 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                   }
                   setForm(prev => ({ ...prev, treatment_id: newTrId, therapist_id: newThId }));
                 }}
-                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-white appearance-none cursor-pointer"
+                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all bg-white appearance-none cursor-pointer"
               >
-                <option value="">Hizmet seçiniz...</option>
+                <option value="">Seçiniz...</option>
                 {treatments.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name} ({t.duration_minutes} dk) — {t.price} ₺
@@ -276,11 +339,11 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
             </div>
           </div>
 
-          {/* Fizyoterapist Tercihi */}
+          {/* Uzman / Eğitmen Tercihi */}
           {staff.length > 0 && (
             <div>
               <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-                Fizyoterapist {staff.length > 1 ? <span className="text-red-500">*</span> : '(İsteğe Bağlı)'}
+                {sector.staffSingular} {staff.length > 1 ? <span className="text-red-500">*</span> : '(İsteğe Bağlı)'}
               </label>
               <div className="relative">
                 <UserCheck size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -288,9 +351,9 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                   required={staff.length > 1}
                   value={form.therapist_id}
                   onChange={e => set('therapist_id', e.target.value)}
-                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all bg-white appearance-none cursor-pointer"
+                  className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all bg-white appearance-none cursor-pointer"
                 >
-                  <option value="">{staff.length > 1 ? 'Fizyoterapist seçiniz *' : 'Fark Etmez / İlk Müsait Terapist'}</option>
+                  <option value="">{staff.length > 1 ? `${sector.staffSingular} seçiniz *` : `Fark Etmez / İlk Müsait ${sector.staffSingular}`}</option>
                   {(form.treatment_id ? (() => {
                     const tr = treatments.find(t => t.id === form.treatment_id);
                     const assignedIds = getTreatmentAssignedStaff(tr, clinic);
@@ -301,7 +364,7 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                     return staff.filter(s => s.role === 'therapist' || s.role === 'admin');
                   })() : staff.filter(s => s.role === 'therapist' || s.role === 'admin')).map(s => (
                     <option key={s.id} value={s.id}>
-                      {s.full_name} ({s.title || 'Fzt.'})
+                      {s.full_name} ({s.title || sector.staffTitle})
                     </option>
                   ))}
                 </select>
@@ -310,41 +373,40 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
           )}
 
           {/* Hizmet Yeri Tercihi */}
-          <div>
-            <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Hizmet Yeri Tercihi
-            </label>
-            <div className={`grid gap-2 ${availableLocations.length <= 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
-              {availableLocations.map((loc) => {
-                const isSelected = locationType === loc.id || locationType === loc.label;
-                return (
-                  <button
-                    key={loc.id}
-                    type="button"
-                    onClick={() => setLocationType(loc.id)}
-                    className={`h-10 px-3 rounded-xl border text-center transition-all cursor-pointer flex items-center justify-center text-[12px] font-semibold select-none ${
-                      isSelected
-                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                        : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="truncate">{loc.label}</span>
-                  </button>
-                );
-              })}
+          {availableLocations.length > 1 && (
+            <div>
+              <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
+                Hizmet Yeri Tercihi
+              </label>
+              <div className={`grid gap-2 ${availableLocations.length <= 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                {availableLocations.map((loc) => {
+                  const isSelected = locationType === loc.id || locationType === loc.label;
+                  return (
+                    <button
+                      key={loc.id}
+                      type="button"
+                      onClick={() => setLocationType(loc.id)}
+                      className={`h-10 px-3 rounded-xl border text-center transition-all cursor-pointer flex items-center justify-center text-[12px] font-semibold select-none ${
+                        isSelected
+                          ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                          : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="truncate">{loc.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Hızlı Şikayet / Ağrı Bölgesi Seçimi */}
+          {/* Hızlı Şikayet / Konu / Hedef Seçimi */}
           <div>
             <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">
-              Hızlı Şikayet / Ağrı Bölgesi (Seçebilirsiniz)
+              Hızlı {sector.complaintLabel} (Seçebilirsiniz)
             </label>
             <div className="flex flex-wrap gap-1.5 mb-2.5">
-              {[
-                '🦴 Bel / Fıtık', '💆‍♂️ Boyun Ağrısı', '🦵 Diz & Menisküs', 
-                '🏃 Omuz / Kol', '📐 Postür & Skolyoz', '🦶 Ayak / Topuk Dikeni', '✨ Genel Kontrol'
-              ].map((tag) => {
+              {quickTags.map((tag) => {
                 const isSelected = form.notes?.includes(tag);
                 return (
                   <button
@@ -360,8 +422,8 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
                     }}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-teal-50 border-teal-400 text-teal-800 font-bold shadow-2xs'
-                        : 'bg-gray-50/80 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-2xs'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     {tag}
@@ -374,10 +436,10 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
               <MessageSquare size={16} className="absolute left-3.5 top-3 text-gray-400" />
               <textarea
                 rows={2}
-                placeholder="Şikayetiniz veya eklemek istediğiniz notlar..."
+                placeholder={`${sector.complaintLabel} veya eklemek istediğiniz notlar...`}
                 value={form.notes}
                 onChange={e => set('notes', e.target.value)}
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all resize-none"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all resize-none"
               />
             </div>
           </div>
@@ -386,12 +448,12 @@ export default function BookingModal({ clinic, slot, treatments, staff = [], def
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-12 mt-2 bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-700 hover:to-emerald-600 text-white rounded-xl text-[14px] font-bold shadow-lg shadow-teal-200 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full h-12 mt-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[14px] font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {submitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Kontrol Ediliyor &amp; Gönderiliyor...</span>
+                <span>İletiliyor...</span>
               </>
             ) : (
               <>

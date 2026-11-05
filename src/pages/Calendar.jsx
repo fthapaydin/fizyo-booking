@@ -7,8 +7,10 @@ import {
   Mail, ShieldCheck, CheckCircle2, Heart
 } from 'lucide-react';
 import { getSessionLocation, getSessionLocationMeta } from '../lib/sessionLocationUtils';
+import { getClinicSectorConfig } from '../lib/sectorUtils';
 
 export default function Calendar({ clinic, onSuccess, onBack }) {
+  const sector = getClinicSectorConfig(clinic);
   const [sessions, setSessions] = useState([]);
   const [sessionRequests, setSessionRequests] = useState([]);
   const [treatments, setTreatments] = useState([]);
@@ -19,7 +21,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showLookup, setShowLookup] = useState(false);
 
-  const clinicName = clinic?.name || 'Fizyoterapi Kliniği';
+  const clinicName = clinic?.name || `${sector.businessSingular} Merkezi`;
   const clinicPhone = clinic?.phone || '0555 555 55 55';
   const clinicAddress = clinic?.address || 'Merkez';
   const themeColor = clinic?.theme_color || '#059669';
@@ -87,12 +89,14 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
                 <img src={clinic.logo_url} alt="Logo" className="w-8 h-8 rounded-xl object-contain shadow-2xs border border-slate-200" />
               ) : (
                 <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-white shrink-0 font-black text-[13px] tracking-tight">
-                  FT
+                  {sector.icon || 'FT'}
                 </div>
               )}
               <div>
                 <span className="text-[14px] font-bold text-slate-900 block leading-tight">{clinicName}</span>
-                <span className="text-[9px] text-slate-500 font-semibold uppercase tracking-wider block leading-tight">ONLINE RANDEVU SİSTEMİ</span>
+                <span className="text-[9px] text-slate-500 font-semibold uppercase tracking-wider block leading-tight">
+                  {sector.shortLabel.toUpperCase()} &amp; ONLİNE RANDEVU SİSTEMİ
+                </span>
               </div>
             </div>
           </div>
@@ -116,7 +120,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
         </div>
       </nav>
 
-      {/* Page Header & Therapist Filter */}
+      {/* Page Header & Staff Filter */}
       <section className="max-w-6xl mx-auto px-4 pt-8 pb-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -126,19 +130,19 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
             </p>
           </div>
 
-          {/* Therapist Selection Selector */}
+          {/* Staff Selection Selector */}
           {staff.length > 0 && (
             <div className="flex items-center gap-2.5 bg-white p-2 px-3.5 rounded-xl border border-slate-200 shadow-2xs">
-              <span className="text-[12px] font-semibold text-slate-500 whitespace-nowrap">Terapist:</span>
+              <span className="text-[12px] font-semibold text-slate-500 whitespace-nowrap">{sector.staffSingular}:</span>
               <select
                 value={selectedTherapistId}
                 onChange={(e) => setSelectedTherapistId(e.target.value)}
                 className="text-[12px] font-bold text-slate-900 bg-transparent outline-none cursor-pointer pr-2"
               >
-                <option value="all">Fark Etmez / Tüm Uzmanlar</option>
+                <option value="all">Fark Etmez / Tüm {sector.staffPlural}</option>
                 {staff.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.full_name} ({s.title || 'Fzt.'})
+                    {s.full_name} ({s.title || sector.staffTitle})
                   </option>
                 ))}
               </select>
@@ -166,7 +170,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
         )}
       </section>
 
-      {/* ─── ENHANCED CORPORATE FOOTER ─── */}
+      {/* ─── CORPORATE FOOTER ─── */}
       <footer className="mt-16 bg-slate-900 text-slate-300 border-t border-slate-800">
         {/* Top Trust Bar */}
         <div className="border-b border-slate-800/80 bg-slate-950/50 py-4 px-4 sm:px-6">
@@ -174,19 +178,19 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
             <div className="flex items-center gap-6 flex-wrap">
               <span className="flex items-center gap-2 text-emerald-400 font-medium">
                 <ShieldCheck size={16} />
-                <span>KVKK Uyumlu &amp; Güvenli Sağlık Verisi</span>
+                <span>KVKK Uyumlu &amp; Güvenli Randevu</span>
               </span>
               <span className="flex items-center gap-2 text-slate-400">
                 <CheckCircle2 size={16} className="text-teal-400" />
-                <span>256-Bit SSL Uçtan Uca Şifreli Randevu</span>
+                <span>256-Bit SSL Uçtan Uca Şifreli İletişim</span>
               </span>
               <span className="flex items-center gap-2 text-slate-400">
                 <Clock size={16} className="text-amber-400" />
-                <span>Anlık SMS &amp; WhatsApp Onay Bildirimi</span>
+                <span>Anlık Onay &amp; Bildirim Sistemi</span>
               </span>
             </div>
             <div className="text-slate-400 text-[11px]">
-              Fizyotim Online Randevu Altyapısı v2.5
+              {sector.shortLabel} Online Randevu Altyapısı v2.5
             </div>
           </div>
         </div>
@@ -195,7 +199,7 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
-            {/* 1. Klinik Hakkında */}
+            {/* 1. İşletme Hakkında */}
             <div className="space-y-3.5">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-emerald-900/30">
@@ -203,22 +207,22 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
                 </div>
                 <div>
                   <h4 className="text-[15px] font-bold text-white tracking-tight">{clinicName}</h4>
-                  <span className="text-[11px] text-emerald-400 font-medium">Fizyoterapi &amp; Rehabilitasyon</span>
+                  <span className="text-[11px] text-emerald-400 font-medium">{sector.badge}</span>
                 </div>
               </div>
               <p className="text-[12px] text-slate-400 leading-relaxed">
-                Uzman fizyoterapist kadromuz ile omurga sağlığı, ortopedik ve nörolojik rehabilitasyonda kanıta dayalı, modern ve bireye özel tedavi yaklaşımları sunuyoruz.
+                Uzman {sector.staffSingular.toLowerCase()} kadromuz ile alanında kanıta dayalı, modern ve bireye özel seans yaklaşımları sunuyoruz.
               </p>
               <div className="pt-1 flex items-center gap-2 text-[11px] text-slate-400">
                 <Heart size={13} className="text-rose-400" />
-                <span>Sağlıklı ve ağrısız bir yaşam için yanınızdayız.</span>
+                <span>Sağlıklı ve kaliteli bir yaşam için yanınızdayız.</span>
               </div>
             </div>
 
-            {/* 2. Tedavi & Hizmet Alanlarımız */}
+            {/* 2. Hizmet Alanlarımız */}
             <div className="space-y-3">
               <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
-                Hizmet Alanlarımız
+                {sector.servicePlural} Alanlarımız
               </h4>
               <ul className="space-y-2 text-[12px] text-slate-400">
                 {treatments.length > 0 ? (
@@ -229,18 +233,17 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
                     </li>
                   ))
                 ) : (
-                  <>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Manuel Terapi &amp; Omurga Sağlığı</span></li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Ortopedik Rehabilitasyon</span></li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Nörolojik Rehabilitasyon</span></li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Sporcu Sağlığı &amp; Egzersiz</span></li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Klinik Pilates &amp; Duruş Analizi</span></li>
-                  </>
+                  (sector.sampleServices || []).slice(0, 5).map((srv, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="hover:text-white transition-colors">{srv.name}</span>
+                    </li>
+                  ))
                 )}
               </ul>
             </div>
 
-            {/* 3. İletişim & Çalışma Saatleri */}
+            {/* 3. İletişim & Ulaşım */}
             <div className="space-y-3">
               <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
                 İletişim &amp; Ulaşım
@@ -253,71 +256,67 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
                   <Phone size={15} className="text-emerald-500 shrink-0 mt-0.5" />
                   <div>
                     <div className="font-semibold text-white">{clinicPhone}</div>
-                    <div className="text-[11px] text-slate-500">Telefon / WhatsApp Randevu Hattı</div>
+                    <div className="text-[11px] text-slate-500">Telefon / Randevu Hattı</div>
                   </div>
                 </a>
 
                 <div className="flex items-start gap-2.5 text-slate-300">
                   <Mail size={15} className="text-emerald-500 shrink-0 mt-0.5" />
-                  <a href={`mailto:${clinic?.email || 'demo@fizyotim.com'}`} className="hover:text-emerald-400 transition-colors">
-                    {clinic?.email || 'demo@fizyotim.com'}
+                  <a href={`mailto:${clinic?.email || 'fatalsoft.inc@gmail.com'}`} className="hover:text-emerald-400 transition-colors">
+                    {clinic?.email || 'fatalsoft.inc@gmail.com'}
                   </a>
                 </div>
 
                 <div className="flex items-start gap-2.5 text-slate-300">
                   <MapPin size={15} className="text-emerald-500 shrink-0 mt-0.5" />
                   <span className="leading-snug">
-                    {clinicAddress || 'Merkez Mahallesi'}, {clinic?.district || 'Kadıköy'} / {clinic?.city || 'İstanbul'}
+                    {clinicAddress || 'Merkez Mahallesi'}, {clinic?.district || ''} / {clinic?.city || 'İstanbul'}
                   </span>
                 </div>
 
                 <div className="flex items-start gap-2.5 text-slate-300 pt-1">
                   <Clock size={15} className="text-emerald-500 shrink-0 mt-0.5" />
                   <div>
-                    <div className="text-white font-medium">Pzt - Cmt: {clinic?.work_start_time || '07:00'} – {clinic?.work_end_time || '22:00'}</div>
+                    <div className="text-white font-medium">Pzt - Cmt: {clinic?.work_start_time || '08:00'} – {clinic?.work_end_time || '20:00'}</div>
                     <div className="text-[11px] text-slate-500">Pazar Günleri Kapalıdır</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* 4. Kurumsal & Yazılım Altyapısı */}
+            {/* 4. Geliştirici & Altyapı */}
             <div className="space-y-3">
               <h4 className="text-[13px] font-bold uppercase tracking-wider text-slate-200">
                 Geliştirici &amp; Altyapı
               </h4>
               <p className="text-[12px] text-slate-400 leading-relaxed">
-                Bu randevu sistemi, fizyoterapi merkezleri için özel geliştirilmiş <strong className="text-white font-medium">Fizyotim</strong> bulut teknolojisi ve <strong className="text-white font-medium">FatalSoft</strong> altyapısıyla kesintisiz olarak çalışmaktadır.
+                Bu randevu sistemi, <strong className="text-white font-medium">FatalSoft</strong> bulut teknolojisi ile kesintisiz ve yüksek güvenlik standartlarında çalışmaktadır.
               </p>
               <div className="pt-2 border-t border-slate-800 space-y-1.5 text-[12px]">
                 <div className="text-slate-300 font-medium">FatalSoft Bilişim Teknolojileri</div>
                 <a 
-                  href="mailto:fatalsoft.inc@gmail.com?subject=Fizyotim%20Bilgi%20Talebi" 
+                  href="mailto:fatalsoft.inc@gmail.com?subject=Randevu%20Sistemi%20Bilgi%20Talebi" 
                   className="inline-flex items-center gap-1.5 text-slate-400 hover:text-emerald-400 transition-colors"
                 >
                   <Mail size={13} className="text-emerald-500" />
                   <span>fatalsoft.inc@gmail.com</span>
                 </a>
-                <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
-                  <MapPin size={12} className="text-emerald-500 shrink-0" />
-                  <span>Kocaeli / Gebze</span>
-                </div>
               </div>
             </div>
 
           </div>
         </div>
 
-        {/* Bottom Copyright & Legal Links */}
+        {/* Bottom Copyright */}
         <div className="border-t border-slate-800/80 py-6 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
             <div>
-              © 2026 <strong className="text-slate-400">{clinicName}</strong>. Tüm hakları saklıdır. Sağlık Bakanlığı mevzuatına uygundur.
+              © 2026 <strong className="text-slate-400">{clinicName}</strong>. Tüm hakları saklıdır.
             </div>
             <div className="flex items-center gap-4 text-slate-400">
               <span className="hover:text-white cursor-pointer transition-colors">KVKK &amp; Gizlilik</span>
               <span>•</span>
-              <span className="hover:text-white cursor-pointer transition-colors">Hasta Hakları</span>
+              <span className="hover:text-white cursor-pointer transition-colors">{sector.clientSingular} Hakları</span>
               <span>•</span>
               <span className="hover:text-white cursor-pointer transition-colors">Kullanım Koşulları</span>
             </div>
@@ -327,7 +326,6 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
           </div>
         </div>
       </footer>
-
 
       {/* Booking Modal */}
       {selectedSlot && (
@@ -344,14 +342,14 @@ export default function Calendar({ clinic, onSuccess, onBack }) {
 
       {/* Lookup Modal */}
       {showLookup && (
-        <LookupModal clinic={clinic} onClose={() => setShowLookup(false)} />
+        <LookupModal clinic={clinic} sector={sector} onClose={() => setShowLookup(false)} />
       )}
     </div>
   );
 }
 
 function maskName(name) {
-  if (!name) return 'Değerli Hastamız';
+  if (!name) return 'Değerli Danışanımız';
   return name.trim().split(/\s+/).map(part => {
     if (part.length <= 2) return part[0] + '*';
     return part.substring(0, 2) + '*'.repeat(Math.min(4, Math.max(2, part.length - 2)));
@@ -359,7 +357,7 @@ function maskName(name) {
 }
 
 function maskTreatment(name) {
-  if (!name) return 'Fizyoterapi Seansı';
+  if (!name) return 'Randevu Seansı';
   return name.trim().split(/\s+/).map(part => {
     if (part.length <= 2) return part;
     return part.substring(0, 2) + '*'.repeat(Math.min(3, Math.max(2, part.length - 2)));
@@ -370,12 +368,12 @@ function maskTherapist(name) {
   if (!name) return '';
   const parts = name.trim().split(/\s+/);
   return parts.map(part => {
-    if (part.toLowerCase().startsWith('dr') || part.toLowerCase().startsWith('fzt')) return part;
+    if (part.toLowerCase().startsWith('dr') || part.toLowerCase().startsWith('fzt') || part.toLowerCase().startsWith('dyt')) return part;
     return part[0] + '***';
   }).join(' ');
 }
 
-function LookupModal({ clinic, onClose }) {
+function LookupModal({ clinic, sector, onClose }) {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
@@ -396,8 +394,6 @@ function LookupModal({ clinic, onClose }) {
     setLoading(true);
     setSearched(true);
     try {
-      // 1. Hasta bul (son 10 haneye göre esnek eşleşme)
-      // 1. Hasta bul (son 10 haneye göre esnek eşleşme)
       const { data: patient, error: pErr } = await supabase
         .from('patients')
         .select('id, full_name, phone, total_sessions')
@@ -412,7 +408,6 @@ function LookupModal({ clinic, onClose }) {
         return;
       }
 
-      // 2. Seanslar ve talepleri çek
       const [sRes, rRes] = await Promise.all([
         supabase
           .from('sessions')
@@ -429,7 +424,6 @@ function LookupModal({ clinic, onClose }) {
       const allSessions = sRes.data || [];
       const allRequests = rRes.data || [];
 
-      // Seans istatistikleri hesaplama
       const totalPlanned = Number(patient.total_sessions) > 0 ? Number(patient.total_sessions) : 10;
       const completedSessions = allSessions.filter(s => s.status === 'tamamlandi').length;
       const pendingSessions = allSessions.filter(s => s.status === 'bekliyor').length + 
@@ -501,30 +495,27 @@ function LookupModal({ clinic, onClose }) {
           <div className="space-y-3">
             {!results?.patient ? (
               <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-center text-[13px] text-gray-500">
-                Bu telefon numarasına ait kayıtlı bir hasta veya randevu bulunamadı.
+                Bu telefon numarasına ait kayıtlı bir {sector?.clientSingular?.toLowerCase() || 'kişi'} veya randevu bulunamadı.
               </div>
             ) : (
               <div>
-                {/* Masked patient greeting & privacy notice */}
                 <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 mb-3 space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-bold text-gray-900">
                       Sayın {maskName(results.patient.full_name)}
                     </span>
                     <span className="text-[10px] text-slate-700 font-semibold bg-slate-200/80 px-2 py-0.5 rounded">
-                      Kayıtlı Hasta
+                      Kayıtlı {sector?.clientSingular || 'Danışan'}
                     </span>
                   </div>
                   <p className="text-[10px] text-slate-500">
-                    KVKK Güvenliği: Kişisel verileriniz ve tedavi detaylarınız maskelenmiştir.
+                    KVKK Güvenliği: Kişisel verileriniz ve randevu detaylarınız maskelenmiştir.
                   </p>
                 </div>
 
-                {/* Seans İstatistikleri (Toplam / Kalan / Bekleyen / Tamamlanan) */}
                 {results.stats && (
                   <div className="mb-3 space-y-2">
                     <div className="grid grid-cols-4 gap-1.5 text-center">
-                      {/* Toplam Seans */}
                       <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                         <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Toplam</span>
                         <span className="text-base font-black text-slate-900 font-mono block leading-tight mt-0.5">
@@ -533,7 +524,6 @@ function LookupModal({ clinic, onClose }) {
                         <span className="text-[9px] text-slate-500 block">Paket Seans</span>
                       </div>
 
-                      {/* Tamamlanan */}
                       <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                         <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Tamamlanan</span>
                         <span className="text-base font-black text-slate-900 font-mono block leading-tight mt-0.5">
@@ -542,7 +532,6 @@ function LookupModal({ clinic, onClose }) {
                         <span className="text-[9px] text-slate-500 block">Gerçekleşen</span>
                       </div>
 
-                      {/* Kalan Seans */}
                       <div className="p-2.5 rounded-xl bg-slate-900 text-white border border-slate-900 shadow-2xs">
                         <span className="text-[10px] uppercase font-bold text-slate-300 block tracking-wider">Kalan</span>
                         <span className="text-base font-black text-white font-mono block leading-tight mt-0.5">
@@ -551,7 +540,6 @@ function LookupModal({ clinic, onClose }) {
                         <span className="text-[9px] text-slate-300 block font-medium">Kullanılabilir</span>
                       </div>
 
-                      {/* Bekleyen Seans */}
                       <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                         <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Bekleyen</span>
                         <span className="text-base font-black text-slate-900 font-mono block leading-tight mt-0.5">
@@ -561,7 +549,6 @@ function LookupModal({ clinic, onClose }) {
                       </div>
                     </div>
 
-                    {/* Tamamlanma Oranı */}
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-[11px] text-slate-600">
                       <span className="font-medium text-slate-700">Seans Tamamlanma Durumu:</span>
                       <div className="flex items-center gap-2">
@@ -579,13 +566,12 @@ function LookupModal({ clinic, onClose }) {
 
                     {results.stats.remaining === 0 && (
                       <div className="p-2.5 rounded-xl bg-slate-900 text-white text-[11px] text-center font-medium shadow-2xs">
-                        Bu döneme ait seans paketiniz tamamlanmıştır. Yeni seans paketi tanımlatmak için lütfen kliniğimiz ile iletişime geçiniz.
+                        Bu döneme ait seans paketiniz tamamlanmıştır. Yeni seans paketi tanımlatmak için lütfen merkezimiz ile iletişime geçiniz.
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Randevu Listesi */}
                 <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-100">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     Randevu Geçmişi &amp; Talepler ({results.items.length})
@@ -633,7 +619,7 @@ function LookupModal({ clinic, onClose }) {
                           </div>
                           {item.rejection_reason && (
                             <p className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded-lg mt-1">
-                              Randevu durumu için lütfen kliniğimiz ile iletişime geçiniz.
+                              Randevu durumu için lütfen merkezimiz ile iletişime geçiniz.
                             </p>
                           )}
                         </div>
