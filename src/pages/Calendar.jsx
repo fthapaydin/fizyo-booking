@@ -7,7 +7,7 @@ import {
   Mail, ShieldCheck, CheckCircle2, Heart
 } from 'lucide-react';
 import { getSessionLocation, getSessionLocationMeta } from '../lib/sessionLocationUtils';
-import { getClinicSectorConfig } from '../lib/sectorUtils';
+import { getClinicSectorConfig, buildDirectWhatsAppUrl } from '../lib/sectorUtils';
 
 export default function Calendar({ clinic, onSuccess, onBack }) {
   const sector = getClinicSectorConfig(clinic);
@@ -617,6 +617,35 @@ function LookupModal({ clinic, sector, onClose }) {
                             <span className="font-mono text-slate-700">{item.date} · {item.time?.substring(0, 5)}</span>
                             {item.therapist?.full_name && <span className="text-slate-600 font-medium">{maskTherapist(item.therapist.full_name)}</span>}
                           </div>
+
+                          {/* Danışan Self-Service Randevu Değişikliği / İptal Aksiyonları */}
+                          {(isApproved || isPending) && clinic?.phone && (
+                            <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                              <a
+                                href={buildDirectWhatsAppUrl(
+                                  clinic.phone,
+                                  `Merhaba, ${clinic.name || 'Merkeziniz'} bünyesindeki ${item.date} saat ${item.time?.substring(0, 5)} randevumun gün veya saatini müsait başka bir zamana ertelemek/değiştirmek istiyorum.`
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2 py-1 rounded-md text-[10px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+                              >
+                                Saat Değiştir
+                              </a>
+                              <a
+                                href={buildDirectWhatsAppUrl(
+                                  clinic.phone,
+                                  `Merhaba, ${clinic.name || 'Merkeziniz'} bünyesindeki ${item.date} saat ${item.time?.substring(0, 5)} randevuma katılamayacağım için iptal edilmesini rica ediyorum.`
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2 py-1 rounded-md text-[10px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 transition-colors"
+                              >
+                                İptal Talebi
+                              </a>
+                            </div>
+                          )}
+
                           {item.rejection_reason && (
                             <p className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded-lg mt-1">
                               Randevu durumu için lütfen merkezimiz ile iletişime geçiniz.
