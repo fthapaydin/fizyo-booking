@@ -411,10 +411,140 @@ export const SECTOR_PRESETS = {
       demoRolePlaceholder: 'Örn: Dkt. Zeynep Yıldız',
       demoBusinessPlaceholder: 'Örn: Söz & Duyu Terapi Merkezi'
     }
+  },
+
+  berber: {
+    id: 'berber',
+    category: 'hizmet_spor',
+    brandName: 'RandevuTim',
+    themeColor: '#d97706',
+    badge: 'Berber, Erkek & Kadın Kuaför Salonu',
+    shortLabel: 'Berber & Kuaför',
+    icon: '💈',
+    clientSingular: 'Müşteri',
+    clientPlural: 'Müşteriler',
+    clientManagementTitle: 'Müşteri Yönetimi',
+    clientSubtitle: 'Müşteri kayıtlarını, saç/sakal stil notlarını ve bakım paketlerini yönetin',
+    staffSingular: 'Usta / Kuaför',
+    staffPlural: 'Ustalar & Koltuklar',
+    staffTitle: 'Usta',
+    staffSubtitle: 'Berber ustalarını, koltukları ve çalışma saatlerini yönetin',
+    serviceSingular: 'Hizmet & Kesim',
+    servicePlural: 'Saç, Sakal & Bakım Hizmetleri',
+    serviceSubtitle: 'Saç kesimi, sakal tıraşı, boya ve damat paketlerini düzenleyin',
+    businessSingular: 'Salon',
+    businessSystemTitle: 'BERBER & KUAFÖR RANDEVU SİSTEMİ',
+    navSectionTitle: 'SALON YÖNETİMİ',
+    sessionSingular: 'Randevu',
+    sessionPlural: 'Randevular',
+    complaintLabel: 'Kesim Stili / İşlem Tercihi',
+    complaintPlaceholder: 'Skin fade, Yanlar 0.5 numara, Sıcak havlu sakal, Damat paketi, Boya kodu...',
+    quickTags: [
+      '✂️ Saç Kesimi (Fade / Anatomik)',
+      '🪒 Sakal & Sıcak Havlu Tıraşı',
+      '💈 Saç + Sakal Komple Bakım',
+      '🧖‍♂️ Buharlı Cilt Bakımı & Maske',
+      '🎨 Saç Boyama / Keratin Bakım',
+      '🤵 VIP Damat Tıraşı Paketi',
+      '👦 Çocuk Saç Kesimi'
+    ],
+    clinicalMetrics: [
+      { id: 'cut_style', label: 'Tercih Edilen Kesim / Makine No', type: 'text', placeholder: 'Örn: Yanlar 0.5 mid-fade, üstler makas' },
+      { id: 'beard_formula', label: 'Sakal / Boya / Ürün Notu', type: 'text', placeholder: 'Örn: Çene hattı keskin, hassas cilt losyonu' },
+      { id: 'vip_notes', label: 'Müşteri Özel Notu', type: 'textarea', placeholder: 'Örn: Randevularını Cuma akşam saatlerinde tercih ediyor' }
+    ],
+    suggestedPackages: [
+      { name: '6’lı Saç & Sakal Abonelik Paketi', sessions: 6, price: 3000, discountLabel: '1 Tıraş Hediye • Popüler' },
+      { name: 'VIP Damat & Sağdıç Bakım Paketi', sessions: 2, price: 3500, discountLabel: 'Özel Gün Paketi' },
+      { name: '4 Seans Keratin & Saç Spa Paketi', sessions: 4, price: 2800, discountLabel: '%15 Avantajlı' }
+    ],
+    sampleServices: [
+      { name: 'Anatomik Saç Kesimi & Yıkama', price: 450, duration_minutes: 40 },
+      { name: 'Sakal Tasarımı & Sıcak Havlu Tıraşı', price: 250, duration_minutes: 25 },
+      { name: 'Saç + Sakal + Yıkama Komple Bakım', price: 650, duration_minutes: 60 },
+      { name: 'Buharlı Cilt Bakımı & Siyah Maske', price: 400, duration_minutes: 30 },
+      { name: 'VIP Damat Paketi (Komple Bakım)', price: 2500, duration_minutes: 90 }
+    ],
+    marketing: {
+      heroBadge: 'Berberler, Erkek & Kadın Kuaför Salonları İçin',
+      heroTitle: 'Salonunuzda Sıra Beklemeye ve Telefon Trafiğine Son',
+      heroHighlight: 'Koltuk Bazlı Akıllı Randevu',
+      heroDesc: 'Müşterileriniz makas başındayken sizi aramak yerine 7/24 boş koltuk ve usta saatlerini görüp randevu alsın; kasa, veresiye ve paketler tek ekranda tutulsun.',
+      portalHeadline: 'Ustanızı Seçin, Sıra Beklemeden Koltuğunuzu Ayırtın',
+      portalSub: 'Şehrinizdeki berber ve kuaför salonlarının müsait saatlerini canlı görün, 30 saniyede randevu alın.',
+      demoRolePlaceholder: 'Örn: Usta Kerem Yılmaz',
+      demoBusinessPlaceholder: 'Örn: Gentleman’s Cut Barber Club'
+    }
+  },
+
+  hali_saha: {
+    id: 'hali_saha',
+    category: 'hizmet_spor',
+    brandName: 'SahaTim',
+    themeColor: '#16a34a',
+    badge: 'Halı Saha, Tenis Kortu & Spor Tesisleri',
+    shortLabel: 'Halı Saha & Spor',
+    icon: '⚽',
+    clientSingular: 'Kaptan / Takım',
+    clientPlural: 'Takımlar & Kaptanlar',
+    clientManagementTitle: 'Takım & Abone Yönetimi',
+    clientSubtitle: 'Takım kaptanlarını, aylık sabit abone saatlerini ve kapora ödemelerini yönetin',
+    staffSingular: 'Saha / Kort',
+    staffPlural: 'Sahalar & Kortlar',
+    staffTitle: 'Saha',
+    staffSubtitle: 'Açık/kapalı sahaları, kortları ve tesis sorumlularını yönetin',
+    serviceSingular: 'Maç / Kiralama',
+    servicePlural: 'Saha Saatleri & Paketler',
+    serviceSubtitle: 'Gündüz/gece saha kiralama ücretlerini ve abone paketlerini düzenleyin',
+    businessSingular: 'Tesis',
+    businessSystemTitle: 'HALI SAHA & SPOR TESİSİ SİSTEMİ',
+    navSectionTitle: 'TESİS YÖNETİMİ',
+    sessionSingular: 'Maç Saati',
+    sessionPlural: 'Maç Rezervasyonları',
+    complaintLabel: 'Takım Adı / Abonelik & Ekipman Notu',
+    complaintPlaceholder: 'Örn: Yıldızlar FC (7x7), Kapora 500₺ alındı, 2 kaleci eldiveni + yelek...',
+    quickTags: [
+      '⚽ Akşam Maçı (Işıklı Saha)',
+      '📅 Haftalık Sabit Abone Takım',
+      '☀️ Gündüz / Öğrenci İndirimli Saat',
+      '🏆 Turnuva & Şirket Maçı',
+      '🧤 Krampon & Kaleci Ekipman Talebi',
+      '📹 Maç Video Kayıt Hizmeti',
+      '🎾 Kort / Salon Kiralama'
+    ],
+    clinicalMetrics: [
+      { id: 'team_name', label: 'Takım Adı & Oyuncu Sayısı', type: 'text', placeholder: 'Örn: Kuzey Gücü FC (7v7 - 14 Kişi)' },
+      { id: 'deposit_info', label: 'Kapora / Ön Ödeme Durumu', type: 'text', placeholder: 'Örn: 500 ₺ IBAN kapora alındı, kalan maç sonu' },
+      { id: 'equipment_notes', label: 'Ekipman & Servis Notu', type: 'textarea', placeholder: 'Örn: Yelek takımı + 42 no krampon hazırlanacak' }
+    ],
+    suggestedPackages: [
+      { name: 'Aylık Sabit Abone Paketi (4 Maç)', sessions: 4, price: 8000, discountLabel: 'Sabit Gün & Saat • Popüler' },
+      { name: '3 Aylık Sezonluk Abone Paketi (12 Maç)', sessions: 12, price: 22000, discountLabel: '%10 İndirimli' },
+      { name: 'Futbol Okulu / Akademi 8 Antrenman', sessions: 8, price: 12000, discountLabel: 'Gündüz Seansı' }
+    ],
+    sampleServices: [
+      { name: 'Akşam Maç Saati Kiralama (Işıklı 60 dk)', price: 2200, duration_minutes: 60 },
+      { name: 'Gündüz Saha Kiralama (60 dk)', price: 1600, duration_minutes: 60 },
+      { name: 'Aylık Abone Takım Maç Saati', price: 2000, duration_minutes: 60 },
+      { name: '8x8 Büyük Saha Maç Rezervasyonu', price: 2800, duration_minutes: 60 },
+      { name: 'Kurumsal Turnuva & Hakemli Maç', price: 3500, duration_minutes: 60 }
+    ],
+    marketing: {
+      heroBadge: 'Halı Sahalar, Tenis Kortları & Spor Tesisleri İçin',
+      heroTitle: 'Halı Saha Boş Saatlerini ve Abone Takımları Tek Ekrandan Yönetin',
+      heroHighlight: 'Çift Rezervasyona ve Boş Sahaya Son',
+      heroDesc: 'Oyuncular 21:00-22:00 boş mu diye sürekli telefon açmasın! Canlı saha takviminden boş saatleri görüp rezervasyon talebi göndersin, abone takımlar her haftaya tek tıkla kopyalansın.',
+      portalHeadline: 'Boş Saha Saatlerini Canlı Görün, Maçınızı Hemen Ayırtın',
+      portalSub: 'Şehrinizdeki halı sahaların açık/kapalı saha doluluk durumunu anlık inceleyin ve takımınızın saatini kilitleyin.',
+      demoRolePlaceholder: 'Örn: Tesis Müdürü Kemal Arslan',
+      demoBusinessPlaceholder: 'Örn: Arena Halı Saha & Spor Tesisleri'
+    }
   }
 };
 
 export const SECTOR_LIST = Object.values(SECTOR_PRESETS);
+export const HEALTH_SECTOR_LIST = SECTOR_LIST.filter(s => s.category !== 'hizmet_spor');
+export const EXTRA_SECTOR_LIST = SECTOR_LIST.filter(s => s.category === 'hizmet_spor');
 
 /**
  * Diyetisyen & Sağlık için Vücut Kitle İndeksi (VKİ) hesaplama fonksiyonu
@@ -486,6 +616,11 @@ export function formatAppointmentWhatsAppText({
  * URL'den (?sektor=diyetisyen vb.) veya localStorage'dan aktif pazarlama/demo sektörünü okur
  */
 export function getMarketingSectorKey() {
+  const defaultEnvSector = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_DEFAULT_SECTOR)
+    ? String(import.meta.env.VITE_DEFAULT_SECTOR).toLowerCase()
+    : 'fizyoterapi';
+  const fallbackSector = SECTOR_PRESETS[defaultEnvSector] ? defaultEnvSector : 'fizyoterapi';
+
   if (typeof window !== 'undefined') {
     const params = new URLSearchParams(window.location.search);
     const fromUrl = params.get('sektor') || params.get('sector') || params.get('brans');
@@ -500,7 +635,7 @@ export function getMarketingSectorKey() {
       if (saved && SECTOR_PRESETS[saved]) return saved;
     } catch {}
   }
-  return 'fizyoterapi';
+  return fallbackSector;
 }
 
 export function setMarketingSectorKey(sectorKey) {
